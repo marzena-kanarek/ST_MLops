@@ -8,10 +8,14 @@ __pycache__/
 
 data/raw/*
 data/processed/*
+data/external/*
 !data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
 models/*.joblib
 mlruns/
 mlflow.db
 
 .env
 .DS_Store
+
