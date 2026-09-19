@@ -1,0 +1,20 @@
+# Laufzeitumgebung der Schnittstelle — bewusst schlank gehalten.
+#
+# Installation:  python -m pip install -r requirements-api.txt
+#
+# Dieses Set wird im API-Container installiert (Etappe 21). Es enthält weder
+# mlflow noch jupyterlab, matplotlib oder Testwerkzeuge: ein Dienst, der nur
+# Vorhersagen liefert, braucht keine Analyse- und Entwicklungswerkzeuge. Das
+# hält das Abbild klein und die Angriffsfläche gering.
+#
+# Unverändert aus dem Vorlagerepository der Dozentin übernommen.
+
+fastapi
+joblib
+loguru
+numpy
+pandas
+python-dotenv
+scikit-learn
+typer
+uvicorn
