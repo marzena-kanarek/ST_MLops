@@ -91,7 +91,6 @@ Ausfalls. Sie entstehen gemeinsam mit dem Ausfall und sind zum
 Vorhersagezeitpunkt nicht bekannt. Werden sie als Merkmale verwendet, entsteht
 Data Leakage: die Kennzahlen steigen, das Modell ist im Betrieb nutzlos.
 
-
 ---
 
 ## 6. Wiederherstellung

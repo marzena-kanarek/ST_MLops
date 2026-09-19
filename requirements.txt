@@ -1,36 +1,26 @@
-# Entwicklungsumgebung — vollständiger Satz für Analyse, Training und Tests.
-#
 # Installation:  python -m pip install -r requirements.txt
-#
-# Die genauen installierten Versionen stehen in requirements-lock.txt; hier
-# sind nur Mindestversionen angegeben.
+# Die genauen installierten Versionen stehen in requirements-lock.txt
+# Hier sind nur Mindestversionen angegeben.
 
-# ── Datenverarbeitung ──────────────────────────────────────────────
 pandas>=2.0.0
 numpy>=1.24.0
 pyarrow>=15.0.0
 
-# ── Visualisierung ─────────────────────────────────────────────────
 matplotlib>=3.7.0
 seaborn>=0.12.0
 
-# ── Machine Learning ───────────────────────────────────────────────
 scikit-learn>=1.3.0
 xgboost>=2.0.0
 imbalanced-learn>=0.11.0
 scipy>=1.11.0
 
-# ── Explainable AI ─────────────────────────────────────────────────
 shap>=0.44.0
 lime>=0.2.0.1
 
-# ── Tabellen-Formatierung (für df.style) ───────────────────────────
 jinja2>=3.1.0
 
-# ── Experiment Tracking und Modellregister (ab Etappe 11) ──────────
 mlflow>=2.14.0
 
-# ── Schnittstelle und Betrieb (ab Etappe 16) ───────────────────────
 fastapi>=0.110.0
 uvicorn[standard]>=0.29.0
 typer>=0.12.0
@@ -38,22 +28,13 @@ loguru>=0.7.0
 python-dotenv>=1.0.0
 joblib>=1.3.0
 
-# ── Tests (ab Etappe 13) ───────────────────────────────────────────
 pytest>=8.0.0
 
-# ── Codequalität (ab Etappe 19) ────────────────────────────────────
 black>=24.1.0
 flake8>=7.0.0
 isort>=5.13.0
 pre-commit>=3.7.0
 
-# ── Dokumentation ──────────────────────────────────────────────────
 mkdocs>=1.6.0
 
-# ── Jupyter Notebook (optional, falls nicht systemweit installiert) ─
-# jupyter>=1.0.0
-# notebook>=7.0.0
-
-# ── Das Projekt selbst als editierbares Paket ──────────────────────
-# Macht "from src.data.load import load_raw_data" überall nutzbar.
 -e .
