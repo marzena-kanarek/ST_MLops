@@ -1,0 +1,111 @@
+# Zentrale Konfiguration des Projekts.
+#
+# Alle Zahlen, Schwellen und Zusagen über die Daten stehen hier und nirgends
+# sonst. Code liest sie ein, statt sie hart zu verdrahten — so kann sie auch
+# jemand ändern, der kein Python schreibt.
+
+seed: 42
+
+# ── Pfade (relativ zur Projektwurzel) ──────────────────────────────────
+paths:
+  raw_file: "data/raw/ai4i2020.csv"
+  processed_dir: "data/processed"
+  models_dir: "models"
+  reports_dir: "reports"
+  figures_dir: "reports/figures"
+
+# ── Datensatz ──────────────────────────────────────────────────────────
+data:
+  raw_sha256: "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e"
+  target: "machine_failure"
+  # Ursachenspalten: entstehen mit dem Ausfall, zum Vorhersagezeitpunkt
+  # unbekannt. Werden in Etappe 6 entfernt (Data Leakage).
+  leakage_columns: ["twf", "hdf", "pwf", "osf", "rnf"]
+  # Kennungen: tragen keine Information, gehen nicht ins Modell.
+  id_columns: ["udi", "product_id"]
+  test_size: 0.15
+  validation_size: 0.15
+
+# ── Datenvertrag (Etappe 4) ────────────────────────────────────────────
+# Die Zusagen über die Daten. Verletzungen der harten Grenzen (min/max,
+# allowed, required) sind FEHLER und brechen ab. Überschreitungen der
+# weichen Grenzen (warn_min/warn_max) sind WARNUNGEN: im Training toleriert,
+# an der Schnittstelle als Hinweis zurückgegeben.
+#
+# Die harten Grenzen sind physikalisch begründet, nicht statistisch. Die
+# weichen Grenzen umschließen den im Rohdatensatz beobachteten Bereich mit
+# etwas Luft.
+data_contract:
+  expected_row_count: 10000
+  check_row_count: false        # nur für die vollständige Rohdatei sinnvoll
+  max_missing_ratio: 0.0        # der Datensatz ist vollständig
+  warn_on_unexpected_columns: true
+
+  columns:
+    type:
+      required: true
+      kind: categorical
+      allowed: ["L", "M", "H"]
+      beschreibung: "Qualitätsvariante des Werkstücks"
+
+    air_temperature_k:
+      required: true
+      kind: numeric
+      min: 250.0                # unter 250 K ist keine Hallenluft mehr
+      max: 350.0
+      warn_min: 293.0           # beobachtet: 295,3
+      warn_max: 307.0           # beobachtet: 304,5
+      einheit: "K"
+
+    process_temperature_k:
+      required: true
+      kind: numeric
+      min: 250.0
+      max: 380.0
+      warn_min: 303.0           # beobachtet: 305,7
+      warn_max: 317.0           # beobachtet: 313,8
+      einheit: "K"
+
+    rotational_speed_rpm:
+      required: true
+      kind: numeric
+      min: 0.0                  # negative Drehzahl gibt es nicht
+      max: 10000.0
+      warn_min: 1000.0          # beobachtet: 1168
+      warn_max: 3000.0          # beobachtet: 2886
+      einheit: "1/min"
+
+    torque_nm:
+      required: true
+      kind: numeric
+      min: 0.0                  # negatives Drehmoment gibt es hier nicht
+      max: 200.0
+      warn_min: 0.0             # beobachtet: 3,8
+      warn_max: 90.0            # beobachtet: 76,6
+      einheit: "Nm"
+
+    tool_wear_min:
+      required: true
+      kind: numeric
+      min: 0.0
+      max: 1000.0
+      warn_min: 0.0             # beobachtet: 0
+      warn_max: 260.0           # beobachtet: 253
+      einheit: "min"
+
+    machine_failure:
+      required: false           # fehlt in Anfragen an die Schnittstelle
+      kind: categorical
+      allowed: [0, 1]
+      beschreibung: "Zielgröße"
+
+# ── Fehlerkosten (Annahme, siehe README) ───────────────────────────────
+costs:
+  false_negative_eur: 10000     # übersehener Ausfall
+  false_positive_eur: 500       # Fehlalarm
+  true_positive_eur: 800        # geplante Wartung
+
+# ── Qualitätsschranke (Etappe 12) ──────────────────────────────────────
+quality_gate:
+  min_pr_auc: 0.75
+  min_recall: 0.80
