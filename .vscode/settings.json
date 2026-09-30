@@ -1,12 +1,19 @@
 {
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": ["tests"],
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
   "python.analysis.typeCheckingMode": "basic",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "charliermarsh.ruff",
-  "editor.codeActionsOnSave": { "source.organizeImports": "explicit" },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
   "files.encoding": "utf8",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "[markdown]": { "files.trimTrailingWhitespace": false }
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
+  "jupyter.notebookFileRoot": "${workspaceFolder}"
 }
