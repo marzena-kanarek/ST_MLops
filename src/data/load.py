@@ -23,15 +23,15 @@ RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "ai4i2020.csv"
 
 # --- Eingefrorener Zustand der Rohdaten -------------------------------------
 # EXPECTED_SHA256 wird einmalig mit dem Wert aus "python -m src.data.load"
-# gefuellt und danach nicht mehr veraendert. Aendert er sich, ist die Rohdatei
+# gefüllt und danach nicht mehr verändert. Ändert er sich, ist die Rohdatei
 # nicht mehr dieselbe - dann ist keine Kennzahl mehr mit frueheren vergleichbar.
 EXPECTED_SHA256 = "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e"
 EXPECTED_ROW_COUNT = 10_000
 
 # --- Spaltennamen -----------------------------------------------------------
-# Originalnamen enthalten Leerzeichen und Einheiten in Klammern. Das raecht sich
+# Originalnamen enthalten Leerzeichen und Einheiten in Klammern. Das rächt sich
 # in jeder Formel, in pandas-Query-Ausdruecken und in jedem JSON-Schema der
-# spaeteren Schnittstelle, deshalb wird beim Laden umbenannt.
+# späteren Schnittstelle, deshalb wird beim Laden umbenannt.
 COLUMN_MAPPING: dict[str, str] = {
     "UDI": "udi",
     "Product ID": "product_id",
@@ -49,20 +49,20 @@ COLUMN_MAPPING: dict[str, str] = {
     "RNF": "rnf",
 }
 
-#: Zielgroesse der binaeren Klassifikation.
+#: Zielgröße der binaeren Klassifikation.
 TARGET_COLUMN = "machine_failure"
 
 #: Ursachenspalten des Ausfalls. Sie entstehen *mit* dem Ausfall und sind zum
 #: Vorhersagezeitpunkt nicht bekannt -> Data Leakage. Entfernt werden sie erst
-#: in Etappe 6, nicht hier: data/raw bleibt vollstaendig und unveraendert.
+#: in Etappe 6, nicht hier: data/raw bleibt vollständig und unverändert.
 LEAKAGE_COLUMNS: tuple[str, ...] = ("twf", "hdf", "pwf", "osf", "rnf")
 
 
 def datei_hash(pfad: Path, blockgroesse: int = 65_536) -> str:
     """Berechnet den SHA-256-Hash einer Datei blockweise.
 
-    Blockweise, damit auch grosse Dateien nicht vollstaendig in den Arbeits-
-    speicher geladen werden muessen.
+    Blockweise, damit auch grosse Dateien nicht vollständig in den Arbeits-
+    speicher geladen werden müssen.
     """
     digest = hashlib.sha256()
     with open(pfad, "rb") as handle:
@@ -74,8 +74,8 @@ def datei_hash(pfad: Path, blockgroesse: int = 65_536) -> str:
 def pruefe_integritaet(pfad: Path = RAW_DATA_PATH, erwartet: str = EXPECTED_SHA256) -> str:
     """Prueft, ob die Rohdatei noch die eingefrorene Datei ist.
 
-    Gibt den tatsaechlichen Hash zurueck. Ist ``erwartet`` leer, wird nur
-    berechnet und nicht geprueft (Zustand vor dem ersten Eintragen).
+    Gibt den tatsaechlichen Hash zurück. Ist ``erwartet`` leer, wird nur
+    berechnet und nicht geprüft (Zustand vor dem ersten Eintragen).
 
     Raises:
         FileNotFoundError: wenn die Rohdatei fehlt.
@@ -91,7 +91,7 @@ def pruefe_integritaet(pfad: Path = RAW_DATA_PATH, erwartet: str = EXPECTED_SHA2
     tatsaechlich = datei_hash(pfad)
     if erwartet and tatsaechlich != erwartet:
         raise ValueError(
-            "Die Rohdatei stimmt nicht mehr mit dem eingefrorenen Stand ueberein.\n"
+            "Die Rohdatei stimmt nicht mehr mit dem eingefrorenen Stand überein.\n"
             f"  Datei:     {pfad}\n"
             f"  erwartet:  {erwartet}\n"
             f"  berechnet: {tatsaechlich}\n"
@@ -109,7 +109,7 @@ def load_raw_data(
 
     Args:
         pfad: Pfad zur Rohdatei. Standard ist die eingefrorene Datei unter data/raw/.
-        integritaet_pruefen: Wenn True, wird vor dem Laden der SHA-256-Hash geprueft.
+        integritaet_prüfen: Wenn True, wird vor dem Laden der SHA-256-Hash geprüft.
 
     Returns:
         DataFrame mit allen Originalspalten unter technischen Namen. Es werden
@@ -134,16 +134,16 @@ def load_raw_data(
 
 
 def _main() -> None:
-    """Gibt Hash und Eckdaten der Rohdatei aus - Grundlage fuer Etappe 3."""
+    """Gibt Hash und Eckdaten der Rohdatei aus - Grundlage für Etappe 3."""
     tatsaechlich = pruefe_integritaet(erwartet="")  # nur berechnen, nicht vergleichen
     frame = load_raw_data(integritaet_pruefen=False)
     anteil = frame[TARGET_COLUMN].mean()
 
     print(f"Datei:            {RAW_DATA_PATH}")
-    print(f"Groesse:          {RAW_DATA_PATH.stat().st_size:,} Byte")
+    print(f"Größe:            {RAW_DATA_PATH.stat().st_size:,} Byte")
     print(f"SHA-256:          {tatsaechlich}")
     print(f"Zeilen x Spalten: {frame.shape[0]} x {frame.shape[1]}")
-    print(f"Positive Faelle:  {int(frame[TARGET_COLUMN].sum())} ({anteil:.2%})")
+    print(f"Positive Fälle:   {int(frame[TARGET_COLUMN].sum())} ({anteil:.2%})")
     print()
     print("Diesen Hash in EXPECTED_SHA256 und in references/datenbeschreibung.md eintragen.")
 

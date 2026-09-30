@@ -59,7 +59,7 @@ class ValidationResult:
 
     def report(self) -> str:
         """Menschenlesbarer Bericht, für Notebook und Kommandozeile."""
-        zeilen = [f"{self.checks_run} Pruefungen ausgefuehrt."]
+        zeilen = [f"{self.checks_run} Prüfungen ausgeführt."]
         if self.errors:
             zeilen.append(f"\nFEHLER ({len(self.errors)}):")
             zeilen += [f"  - {e}" for e in self.errors]
@@ -108,8 +108,8 @@ def _pruefe_numerisch(
         ergebnis.checks_run += 1
         if verstoesse.any():
             ergebnis.errors.append(
-                f"'{spalte}': {int(verstoesse.sum())} Wert(e) ueber der physikalischen "
-                f"Obergrenze {obergrenze}{suffix} (groesster: {werte.max()})"
+                f"'{spalte}': {int(verstoesse.sum())} Wert(e) über der physikalischen "
+                f"Obergrenze {obergrenze}{suffix} (größter: {werte.max()})"
             )
 
     # Weiche Grenzen -> Warnung
@@ -118,7 +118,7 @@ def _pruefe_numerisch(
         ergebnis.checks_run += 1
         if auffaellig.any():
             ergebnis.warnings.append(
-                f"'{spalte}': {int(auffaellig.sum())} Wert(e) unter dem ueblichen "
+                f"'{spalte}': {int(auffaellig.sum())} Wert(e) unter dem üblichen "
                 f"Bereich (< {warn_unten}{suffix}, kleinster: {werte.min()})"
             )
     if (warn_oben := regeln.get("warn_max")) is not None:
@@ -126,8 +126,8 @@ def _pruefe_numerisch(
         ergebnis.checks_run += 1
         if auffaellig.any():
             ergebnis.warnings.append(
-                f"'{spalte}': {int(auffaellig.sum())} Wert(e) ueber dem ueblichen "
-                f"Bereich (> {warn_oben}{suffix}, groesster: {werte.max()})"
+                f"'{spalte}': {int(auffaellig.sum())} Wert(e) über dem üblichen "
+                f"Bereich (> {warn_oben}{suffix}, größter: {werte.max()})"
             )
 
 
@@ -137,7 +137,7 @@ def _pruefe_kategorial(
     regeln: dict[str, Any],
     ergebnis: ValidationResult,
 ) -> None:
-    """Erlaubte Auspraegungen einer kategorialen Spalte."""
+    """Erlaubte Ausprägungen einer kategorialen Spalte."""
     erlaubt = regeln.get("allowed")
     if erlaubt is None:
         return
@@ -146,7 +146,7 @@ def _pruefe_kategorial(
     unerwartet = vorhanden - set(erlaubt)
     if unerwartet:
         ergebnis.errors.append(
-            f"'{spalte}': unerlaubte Auspraegung(en) {sorted(map(str, unerwartet))}, "
+            f"'{spalte}': unerlaubte Ausprägung(en) {sorted(map(str, unerwartet))}, "
             f"erlaubt sind {erlaubt}"
         )
 
@@ -158,11 +158,11 @@ def validate_dataframe(
     """Prueft einen DataFrame gegen den Datenvertrag.
 
     Args:
-        frame: zu pruefender DataFrame mit technischen Spaltennamen.
+        frame: zu prüfender DataFrame mit technischen Spaltennamen.
         contract: Vertrag als dict. Standard: Abschnitt data_contract aus params.yaml.
 
     Returns:
-        ValidationResult mit Fehlern, Warnungen und Anzahl der Pruefungen.
+        ValidationResult mit Fehlern, Warnungen und Anzahl der Prüfungen.
     """
     if contract is None:
         contract = load_contract()
@@ -188,13 +188,13 @@ def validate_dataframe(
                 f"erlaubt sind hoechstens {max_fehlend:.1%}"
             )
 
-        # 3) Typ- und Wertebereichspruefungen
+        # 3) Typ- und Wertebereichsprüfungen
         if regeln.get("kind") == "numeric":
             _pruefe_numerisch(frame, spalte, regeln, ergebnis)
         elif regeln.get("kind") == "categorical":
             _pruefe_kategorial(frame, spalte, regeln, ergebnis)
 
-    # 4) Zeilenzahl (nur fuer die vollstaendige Rohdatei sinnvoll)
+    # 4) Zeilenzahl (nur für die vollständige Rohdatei sinnvoll)
     if contract.get("check_row_count", False):
         erwartet = contract.get("expected_row_count")
         ergebnis.checks_run += 1
@@ -221,13 +221,13 @@ def _main() -> None:
 
     frame = load_raw_data()
     vertrag = load_contract()
-    vertrag["check_row_count"] = True  # bei der Rohdatei pruefen wir sie mit
+    vertrag["check_row_count"] = True  # bei der Rohdatei prüfen wir sie mit
     ergebnis = validate_dataframe(frame, vertrag)
 
-    print(f"Geprueft: {len(frame)} Zeilen x {frame.shape[1]} Spalten")
+    print(f"Geprüft: {len(frame)} Zeilen x {frame.shape[1]} Spalten")
     print(ergebnis.report())
     print()
-    print("gueltig:", ergebnis.is_valid)
+    print("gültig:", ergebnis.is_valid)
 
 
 if __name__ == "__main__":
