@@ -173,10 +173,13 @@ python -m src.data.load
 
 # Rohdaten gegen den Datenvertrag aus params.yaml prüfen
 python -m src.data.validate
+
+# Leakage-Spalten entfernen und geschichtet aufteilen -> data/processed/
+python -m src.data.split
 ```
 
-Die explorative Analyse liegt in `notebooks/01_data_exploration.ipynb`; die
-erzeugten Abbildungen landen unter `reports/figures/`.
+Die Notebooks liegen unter `notebooks/`, die erzeugten Abbildungen unter
+`reports/figures/`.
 
 Weitere Befehle kommen mit den folgenden Etappen hinzu (Trainingslauf,
 Pipeline, Schnittstelle, Überwachung).
@@ -191,8 +194,8 @@ Pipeline, Schnittstelle, Überwachung).
 | 2 | Werkzeuge und Repository einrichten | erledigt |
 | 3 | Daten holen und einfrieren | erledigt |
 | 4 | Datenvertrag und Validierung | erledigt |
-| 5 | Explorative Analyse | in Arbeit |
-| 6 | Leakage prüfen, Daten aufteilen | offen |
+| 5 | Explorative Analyse | erledigt |
+| 6 | Leakage prüfen, Daten aufteilen | erledigt |
 | 7 | Baseline bauen | offen |
 | 8 | Merkmale konstruieren | offen |
 | 9 | Modelle vergleichen und abstimmen | offen |
