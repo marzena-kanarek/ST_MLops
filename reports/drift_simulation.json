@@ -1,0 +1,337 @@
+{
+  "simulated_at": "2026-10-02T07:04:49+00:00",
+  "reference_rows": 1000,
+  "evaluated_rows": 1500,
+  "evaluated_on": "validierungsmenge",
+  "threshold": 0.06,
+  "thresholds": {
+    "psi_warn": 0.1,
+    "psi_alarm": 0.25
+  },
+  "scenarios": [
+    {
+      "scenario": "keine_drift",
+      "description": "Kontrollfall, unveränderte Daten",
+      "verdict": "stabil",
+      "max_psi": 0.0023,
+      "max_psi_feature": "rotational_speed_rpm",
+      "prediction_psi": 0.0023,
+      "prediction_verdict": "stabil",
+      "alarm_rate": 0.0573,
+      "recall": 0.8627,
+      "precision": 0.5116,
+      "costs_eur": 126200.0,
+      "features": [
+        {
+          "Merkmal": "rotational_speed_rpm",
+          "PSI": 0.0023,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0133,
+          "p-Wert": 0.999902,
+          "signifikant": false,
+          "Referenz Mittel": 1535.703,
+          "Aktuell Mittel": 1538.426
+        },
+        {
+          "Merkmal": "air_temperature_k",
+          "PSI": 0.0019,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0113,
+          "p-Wert": 0.999998,
+          "signifikant": false,
+          "Referenz Mittel": 299.997,
+          "Aktuell Mittel": 299.989
+        },
+        {
+          "Merkmal": "tool_wear_min",
+          "PSI": 0.0017,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0093,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 106.424,
+          "Aktuell Mittel": 106.328
+        },
+        {
+          "Merkmal": "process_temperature_k",
+          "PSI": 0.0016,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0107,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 309.998,
+          "Aktuell Mittel": 309.99
+        },
+        {
+          "Merkmal": "type",
+          "PSI": 0.0011,
+          "Urteil": "stabil",
+          "Test": "Chi²",
+          "Statistik": 0.6331,
+          "p-Wert": 0.728664,
+          "signifikant": false,
+          "Referenz Mittel": "—",
+          "Aktuell Mittel": "—"
+        },
+        {
+          "Merkmal": "torque_nm",
+          "PSI": 0.0008,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0087,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 40.188,
+          "Aktuell Mittel": 40.075
+        }
+      ]
+    },
+    {
+      "scenario": "temperatur_kalibrierung",
+      "description": "Prozesstemperatur 3 K zu hoch gemessen",
+      "verdict": "handeln",
+      "max_psi": 4.6885,
+      "max_psi_feature": "process_temperature_k",
+      "prediction_psi": 0.5094,
+      "prediction_verdict": "handeln",
+      "alarm_rate": 0.06,
+      "recall": 0.6275,
+      "precision": 0.3556,
+      "costs_eur": 244600.0,
+      "features": [
+        {
+          "Merkmal": "process_temperature_k",
+          "PSI": 4.6885,
+          "Urteil": "handeln",
+          "Test": "KS",
+          "Statistik": 0.6907,
+          "p-Wert": 0.0,
+          "signifikant": true,
+          "Referenz Mittel": 309.998,
+          "Aktuell Mittel": 312.99
+        },
+        {
+          "Merkmal": "rotational_speed_rpm",
+          "PSI": 0.0023,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0133,
+          "p-Wert": 0.999902,
+          "signifikant": false,
+          "Referenz Mittel": 1535.703,
+          "Aktuell Mittel": 1538.426
+        },
+        {
+          "Merkmal": "air_temperature_k",
+          "PSI": 0.0019,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0113,
+          "p-Wert": 0.999998,
+          "signifikant": false,
+          "Referenz Mittel": 299.997,
+          "Aktuell Mittel": 299.989
+        },
+        {
+          "Merkmal": "tool_wear_min",
+          "PSI": 0.0017,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0093,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 106.424,
+          "Aktuell Mittel": 106.328
+        },
+        {
+          "Merkmal": "type",
+          "PSI": 0.0011,
+          "Urteil": "stabil",
+          "Test": "Chi²",
+          "Statistik": 0.6331,
+          "p-Wert": 0.728664,
+          "signifikant": false,
+          "Referenz Mittel": "—",
+          "Aktuell Mittel": "—"
+        },
+        {
+          "Merkmal": "torque_nm",
+          "PSI": 0.0008,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0087,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 40.188,
+          "Aktuell Mittel": 40.075
+        }
+      ]
+    },
+    {
+      "scenario": "verschleiss_hoch",
+      "description": "Werkzeugverschleiß +60 min",
+      "verdict": "handeln",
+      "max_psi": 3.7724,
+      "max_psi_feature": "tool_wear_min",
+      "prediction_psi": 0.4492,
+      "prediction_verdict": "handeln",
+      "alarm_rate": 0.3233,
+      "recall": 0.9608,
+      "precision": 0.101,
+      "costs_eur": 277200.0,
+      "features": [
+        {
+          "Merkmal": "tool_wear_min",
+          "PSI": 3.7724,
+          "Urteil": "handeln",
+          "Test": "KS",
+          "Statistik": 0.298,
+          "p-Wert": 0.0,
+          "signifikant": true,
+          "Referenz Mittel": 106.424,
+          "Aktuell Mittel": 166.328
+        },
+        {
+          "Merkmal": "rotational_speed_rpm",
+          "PSI": 0.0023,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0133,
+          "p-Wert": 0.999902,
+          "signifikant": false,
+          "Referenz Mittel": 1535.703,
+          "Aktuell Mittel": 1538.426
+        },
+        {
+          "Merkmal": "air_temperature_k",
+          "PSI": 0.0019,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0113,
+          "p-Wert": 0.999998,
+          "signifikant": false,
+          "Referenz Mittel": 299.997,
+          "Aktuell Mittel": 299.989
+        },
+        {
+          "Merkmal": "process_temperature_k",
+          "PSI": 0.0016,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0107,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 309.998,
+          "Aktuell Mittel": 309.99
+        },
+        {
+          "Merkmal": "type",
+          "PSI": 0.0011,
+          "Urteil": "stabil",
+          "Test": "Chi²",
+          "Statistik": 0.6331,
+          "p-Wert": 0.728664,
+          "signifikant": false,
+          "Referenz Mittel": "—",
+          "Aktuell Mittel": "—"
+        },
+        {
+          "Merkmal": "torque_nm",
+          "PSI": 0.0008,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0087,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 40.188,
+          "Aktuell Mittel": 40.075
+        }
+      ]
+    },
+    {
+      "scenario": "typverteilung",
+      "description": "80 % der Teile auf Variante H",
+      "verdict": "handeln",
+      "max_psi": 2.9495,
+      "max_psi_feature": "type",
+      "prediction_psi": 0.033,
+      "prediction_verdict": "stabil",
+      "alarm_rate": 0.0573,
+      "recall": 0.8627,
+      "precision": 0.5116,
+      "costs_eur": 126200.0,
+      "features": [
+        {
+          "Merkmal": "type",
+          "PSI": 2.9495,
+          "Urteil": "handeln",
+          "Test": "Chi²",
+          "Statistik": 1318.1571,
+          "p-Wert": 0.0,
+          "signifikant": true,
+          "Referenz Mittel": "—",
+          "Aktuell Mittel": "—"
+        },
+        {
+          "Merkmal": "rotational_speed_rpm",
+          "PSI": 0.0023,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0133,
+          "p-Wert": 0.999902,
+          "signifikant": false,
+          "Referenz Mittel": 1535.703,
+          "Aktuell Mittel": 1538.426
+        },
+        {
+          "Merkmal": "air_temperature_k",
+          "PSI": 0.0019,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0113,
+          "p-Wert": 0.999998,
+          "signifikant": false,
+          "Referenz Mittel": 299.997,
+          "Aktuell Mittel": 299.989
+        },
+        {
+          "Merkmal": "tool_wear_min",
+          "PSI": 0.0017,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0093,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 106.424,
+          "Aktuell Mittel": 106.328
+        },
+        {
+          "Merkmal": "process_temperature_k",
+          "PSI": 0.0016,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0107,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 309.998,
+          "Aktuell Mittel": 309.99
+        },
+        {
+          "Merkmal": "torque_nm",
+          "PSI": 0.0008,
+          "Urteil": "stabil",
+          "Test": "KS",
+          "Statistik": 0.0087,
+          "p-Wert": 1.0,
+          "signifikant": false,
+          "Referenz Mittel": 40.188,
+          "Aktuell Mittel": 40.075
+        }
+      ]
+    }
+  ]
+}

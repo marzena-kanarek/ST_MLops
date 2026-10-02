@@ -32,9 +32,7 @@ from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from src.data.validate import load_params
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from src.config import PATHS, load_params
 
 
 def entferne_leakage_und_kennungen(
@@ -126,8 +124,7 @@ def schreibe_teilmengen(
     ``type`` wäre wieder ein beliebiger Text, und Ganzzahlen könnten zu
     Fließkomma werden.
     """
-    params = load_params()
-    verzeichnis = verzeichnis or PROJECT_ROOT / params["paths"]["processed_dir"]
+    verzeichnis = verzeichnis or PATHS.processed
     verzeichnis.mkdir(parents=True, exist_ok=True)
     pfade = {}
     for name, teil in teilmengen.items():
@@ -135,6 +132,40 @@ def schreibe_teilmengen(
         teil.to_parquet(pfad, index=False)
         pfade[name] = pfad
     return pfade
+
+
+def lade_teilmengen(
+    verzeichnis: Path | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Liest die in Etappe 6 abgelegten Teilmengen wieder ein.
+
+    Damit müssen spätere Notebooks nicht erneut aufteilen — sie arbeiten auf
+    genau denselben Zeilen wie alle anderen.
+
+    Raises:
+        FileNotFoundError: wenn die Teilmengen fehlen; dann erst
+            ``python -m src.data.split`` ausführen.
+    """
+    verzeichnis = verzeichnis or PATHS.processed
+    teile = []
+    for name in ("train", "val", "test"):
+        pfad = verzeichnis / f"{name}.parquet"
+        if not pfad.exists():
+            raise FileNotFoundError(
+                f"{pfad} fehlt. Bitte zuerst 'python -m src.data.split' ausführen."
+            )
+        teile.append(pd.read_parquet(pfad))
+    return tuple(teile)  # type: ignore[return-value]
+
+
+def trenne_merkmale_und_ziel(
+    frame: pd.DataFrame,
+    params: dict | None = None,
+) -> tuple[pd.DataFrame, pd.Series]:
+    """Zerlegt eine Teilmenge in Merkmale (X) und Zielgröße (y)."""
+    params = params or load_params()
+    ziel = params["data"]["target"]
+    return frame.drop(columns=[ziel]), frame[ziel]
 
 
 def _main() -> None:
@@ -156,15 +187,19 @@ def _main() -> None:
 
     train, val, test = split_data(merkmale, params)
     tabelle = uebersicht({"train": train, "val": val, "test": test}, ziel)
-    print(tabelle.to_string(formatters={
-        "Anteil": "{:.1%}".format,
-        "Ausfallrate": "{:.2%}".format,
-    }))
+    print(
+        tabelle.to_string(
+            formatters={
+                "Anteil": "{:.1%}".format,
+                "Ausfallrate": "{:.2%}".format,
+            }
+        )
+    )
     print()
 
     pfade = schreibe_teilmengen({"train": train, "val": val, "test": test})
-    for name, pfad in pfade.items():
-        print(f"geschrieben: {pfad.relative_to(PROJECT_ROOT)}")
+    for pfad in pfade.values():
+        print(f"geschrieben: {PATHS.relativ(pfad)}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,63 @@
+# Dienste des Projekts (Etappe 21).
+#
+#     docker compose up --build          # Schnittstelle bauen und starten
+#     curl http://localhost:8000/health
+#     docker compose down
+#
+# Die MLflow-Oberfläche ist ein Zusatz und startet nur auf Verlangen:
+#
+#     docker compose --profile tracking up
+#
+# Kein "version:"-Eintrag: Er ist in Compose V2 ohne Wirkung und erzeugt beim
+# Start eine Warnung.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: predictive-maintenance-api:local
+    container_name: pdm-api
+    ports:
+      - "8000:8000"
+    environment:
+      LOG_LEVEL: INFO
+    # Die Protokolle (Etappe 17) in einen benannten Datenträger, damit sie einen
+    # Neustart des Containers überleben. Ohne das wären sie mit dem Container
+    # weg — und die Driftprüfung hätte keine Grundlage mehr.
+    volumes:
+      - protokolle:/app/reports
+    restart: unless-stopped
+    stop_grace_period: 10s
+
+    # Das Modell steckt im Abbild. Das ist Absicht: Abbild und Modell sind
+    # zusammen ein versioniertes Artefakt, und der Hash in /model-info gehört zu
+    # genau diesem Abbild. Wer beim Entwickeln ein frisch trainiertes Modell
+    # ohne Neubau einhängen will, nimmt zusätzlich diese Zeile:
+    #
+    #   - ./models:/app/models:ro
+    #
+    # Für einen echten Betrieb bleibt sie weg: Sonst entscheidet das
+    # Dateisystem des Wirtsrechners darüber, welches Modell antwortet.
+
+  mlflow:
+    # Nur mit "--profile tracking". Die Oberfläche liest die Laufdatenbank, die
+    # beim Training entsteht (mlflow.db in der Projektwurzel). Ohne vorherigen
+    # Trainingslauf gibt es nichts zu zeigen.
+    profiles: ["tracking"]
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: pdm-mlflow
+    command: >
+      mlflow ui
+      --backend-store-uri sqlite:////projekt/mlflow.db
+      --host 0.0.0.0 --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/projekt
+    # Hinweis: "latest" ist für einen reproduzierbaren Betrieb zu unscharf. Die
+    # Marke sollte auf die Version aus requirements-lock.txt festgelegt werden
+    # (dort steht die mlflow-Version, gegen die die Laufdaten geschrieben wurden).
+
+volumes:
+  protokolle:

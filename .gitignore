@@ -11,10 +11,21 @@ data/processed/*
 data/external/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+# Die Referenzstichprobe gehört ins Git: Sie ist der Maßstab, gegen den Drift
+# gemessen wird, und muss mit dem Modell zusammen nachvollziehbar sein.
+!data/processed/reference_sample.csv
 !data/external/.gitkeep
 models/*.joblib
 mlruns/
-mlflow.db
+mlflow.db*
+
+# Betriebsprotokolle: entstehen beim Laufen, gehören nicht in die Versionierung
+reports/api.log
+reports/predictions.jsonl
+reports/predictions.db*
+
+# Abgabearchive
+dist/
 
 .env
 .DS_Store

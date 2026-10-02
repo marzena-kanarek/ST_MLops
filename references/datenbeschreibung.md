@@ -15,13 +15,13 @@
 
 **Veröffentlichung:**
 
-| Matzka, S. (2020). Explainable Artificial Intelligence for Predictive Maintenance Applications. 
+| Matzka, S. (2020). Explainable Artificial Intelligence for Predictive Maintenance Applications.
 | In 2020 Third International Conference on Artificial Intelligence for Industries (AI4I). IEEE.
 
 
-**Art der Daten:** 
+**Art der Daten:**
 
-Der syntetische Datensatz spiegelt die realen Daten zur vorausschauenden Instandhaltung aus der Industrie wider, ist aber nicht an einer Maschine gemessen worden. Verteilungen und Ausfallmechanismen wurden nach festen Regeln erzeugt. 
+Der syntetische Datensatz spiegelt die realen Daten zur vorausschauenden Instandhaltung aus der Industrie wider, ist aber nicht an einer Maschine gemessen worden. Verteilungen und Ausfallmechanismen wurden nach festen Regeln erzeugt.
 
 ---
 
@@ -40,9 +40,9 @@ Hash und Eckdaten werden erzeugt mit:
 python -m src.data.load
 ```
 
-Derselbe Wert steht in `src/data/load.py` als `EXPECTED_SHA256` und wird bei jedem Laden der Rohdaten geprüft. Er wird in jeden MLflow-Lauf als `provenance.raw_data_sha256` in das Pipeline-Manifest geschrieben.
+Derselbe Wert steht in `params.yaml` unter `data.raw_sha256` und wird beim Laden der Rohdaten geprüft (`src/data/load.py` liest ihn von dort als `EXPECTED_SHA256`). Er wird in jedem MLflow-Lauf protokolliert und als `provenance.raw_data_sha256` in das Pipeline-Manifest `reports/pipeline_run.json` geschrieben.
 
-**Die Rohdatei wird nicht verändert.** 
+**Die Rohdatei wird nicht verändert.**
 
 ---
 
@@ -98,9 +98,12 @@ Data Leakage: die Kennzahlen steigen, das Modell ist im Betrieb nutzlos.
 Die Rohdatei liegt nicht im Git-Repository (`.gitignore`: `data/raw/*`). Um sie
 wiederherzustellen:
 
+Am einfachsten mit `python scripts/fetch_data.py` — das Skript erledigt die drei
+Schritte unten und prüft den Hash selbst. Von Hand:
+
 1. ZIP-Archiv unter der oben genannten Download-URL laden
 2. entpacken, `ai4i2020.csv` nach `data/raw/` legen
-3. `python -m src.data.load` ausführen 
+3. `python -m src.data.load` ausführen
 
 Für die Abgabe als ZIP über das LMS wird `data/raw/ai4i2020.csv` mit
 eingepackt, damit die Pipeline ohne Internetzugang lauffähig ist.

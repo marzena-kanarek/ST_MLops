@@ -16,17 +16,22 @@ from pathlib import Path
 
 import pandas as pd
 
-# Lage der Datei -> Projektwurzel. src/data/load.py: parents[0]=data, [1]=src, [2]=Wurzel.
-# Ab Etappe 14 kommt das aus src/config.py (PATHS.raw); bis dahin steht es hier.
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "ai4i2020.csv"
+from src.config import PATHS, load_params
+
+# Alle Werte dieses Moduls stammen aus params.yaml. Hier steht keine Zahl und
+# kein Pfad mehr (Etappe 14).
+_PARAMS = load_params()
+
+#: Die eingefrorene Rohdatei. Pfad aus params.yaml, Abschnitt ``paths``.
+RAW_DATA_PATH = PATHS.raw_file
 
 # --- Eingefrorener Zustand der Rohdaten -------------------------------------
-# EXPECTED_SHA256 wird einmalig mit dem Wert aus "python -m src.data.load"
-# gefüllt und danach nicht mehr verändert. Ändert er sich, ist die Rohdatei
-# nicht mehr dieselbe - dann ist keine Kennzahl mehr mit frueheren vergleichbar.
-EXPECTED_SHA256 = "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e"
-EXPECTED_ROW_COUNT = 10_000
+#: SHA-256 der eingefrorenen Rohdatei (params.yaml: ``data.raw_sha256``).
+#: Einmalig mit dem Wert aus "python -m src.data.load" gefuellt und danach nicht
+#: mehr verändert. Ändert er sich, ist die Rohdatei nicht mehr dieselbe - dann
+#: ist keine Kennzahl mehr mit frueheren vergleichbar.
+EXPECTED_SHA256 = _PARAMS["data"]["raw_sha256"]
+EXPECTED_ROW_COUNT = _PARAMS["data_contract"]["expected_row_count"]
 
 # --- Spaltennamen -----------------------------------------------------------
 # Originalnamen enthalten Leerzeichen und Einheiten in Klammern. Das rächt sich
@@ -49,13 +54,13 @@ COLUMN_MAPPING: dict[str, str] = {
     "RNF": "rnf",
 }
 
-#: Zielgröße der binaeren Klassifikation.
-TARGET_COLUMN = "machine_failure"
+#: Zielgröße der binaeren Klassifikation (params.yaml: ``data.target``).
+TARGET_COLUMN = _PARAMS["data"]["target"]
 
 #: Ursachenspalten des Ausfalls. Sie entstehen *mit* dem Ausfall und sind zum
 #: Vorhersagezeitpunkt nicht bekannt -> Data Leakage. Entfernt werden sie erst
 #: in Etappe 6, nicht hier: data/raw bleibt vollständig und unverändert.
-LEAKAGE_COLUMNS: tuple[str, ...] = ("twf", "hdf", "pwf", "osf", "rnf")
+LEAKAGE_COLUMNS: tuple[str, ...] = tuple(_PARAMS["data"]["leakage_columns"])
 
 
 def datei_hash(pfad: Path, blockgroesse: int = 65_536) -> str:
@@ -145,7 +150,8 @@ def _main() -> None:
     print(f"Zeilen x Spalten: {frame.shape[0]} x {frame.shape[1]}")
     print(f"Positive Fälle:   {int(frame[TARGET_COLUMN].sum())} ({anteil:.2%})")
     print()
-    print("Diesen Hash in EXPECTED_SHA256 und in references/datenbeschreibung.md eintragen.")
+    print("Diesen Hash in params.yaml (data.raw_sha256) und in")
+    print("references/datenbeschreibung.md eintragen.")
 
 
 if __name__ == "__main__":

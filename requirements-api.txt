@@ -1,10 +1,37 @@
+# Laufzeitumgebung der Schnittstelle — bewusst schlank gehalten.
+#
+# Installation:  python -m pip install -r requirements-api.txt
+#
+# Dieses Set wird im API-Abbild installiert (Etappe 21). Es enthält weder mlflow
+# noch jupyterlab, matplotlib oder Testwerkzeuge: Ein Dienst, der nur Vorhersagen
+# liefert, braucht keine Analyse- und Entwicklungswerkzeuge. Das hält das Abbild
+# klein und die Angriffsfläche gering.
+#
+# Grundlage ist die Vorlage aus dem Repository der Dozentin. Zwei Abweichungen,
+# beide gemessen und nicht geraten:
 
+# ── gebraucht ──────────────────────────────────────────────────────────
 fastapi
-joblib
-loguru
+uvicorn
+pydantic                # von fastapi mitgebracht, hier ausdrücklich genannt
+joblib                  # lädt models/model.joblib
 numpy
 pandas
-python-dotenv
-scikit-learn
-typer
-uvicorn
+scikit-learn            # die Pipeline im Modell
+pyyaml                  # ERGÄNZT: src/config.py liest params.yaml.
+                        # Ohne dieses Paket bricht der Dienst beim Start mit
+                        # "ModuleNotFoundError: No module named 'yaml'" ab.
+                        # In der Vorlage fehlte es; aufgefallen beim Nachbau
+                        # des Abbildinhalts in Etappe 21.
+
+# ── nicht gebraucht, deshalb nicht installiert ─────────────────────────
+# Die Vorlage nennt diese drei. Eine Suche über src/ zeigt, dass sie nirgends
+# importiert werden — die Protokollierung läuft über das logging-Modul der
+# Standardbibliothek, die Kommandozeilen nutzen argparse, und Einstellungen
+# kommen aus params.yaml und os.environ. Was nicht gebraucht wird, gehört nicht
+# in ein Laufzeitabbild: jedes Paket ist zusätzliche Angriffsfläche und muss
+# gepflegt werden.
+#
+# loguru
+# typer
+# python-dotenv

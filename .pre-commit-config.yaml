@@ -1,0 +1,76 @@
+# Prüfungen, die vor jedem Commit laufen (Etappe 19).
+#
+# Einrichten — einmalig, nach dem Klonen:
+#
+#     python -m pip install pre-commit
+#     pre-commit install
+#
+# Danach läuft bei jedem "git commit" automatisch, was unten steht. Schlägt ein
+# Haken an und ändert eine Datei, bricht der Commit ab: Die Änderung ist dann im
+# Arbeitsverzeichnis, muss noch einmal mit "git add" aufgenommen und der Commit
+# wiederholt werden. Das ist beabsichtigt — man soll sehen, was verändert wurde.
+#
+# Alles von Hand über das ganze Projekt laufen lassen:
+#
+#     pre-commit run --all-files
+#
+# Einen Commit ausnahmsweise ohne Prüfung (nur für begründete Fälle):
+#
+#     git commit --no-verify
+
+repos:
+  # ── Code: Prüfung und Formatierung ──────────────────────────────────
+  # Dieselben Regeln wie in pyproject.toml, Abschnitt [tool.ruff] — die
+  # Konfiguration steht nur an einer Stelle.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.10
+    hooks:
+      - id: ruff
+        name: ruff (Prüfung, mit Korrektur)
+        args: [--fix]
+      - id: ruff-format
+        name: ruff (Formatierung)
+
+  # ── Dateihygiene ────────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # Notebooks sind von beiden Haken ausgenommen, und das ist wichtig: In den
+      # gespeicherten Ausgaben stehen Tabellen aus pandas, deren Spalten mit
+      # Leerzeichen ausgerichtet sind. Ein Haken, der Leerzeichen am Zeilenende
+      # entfernt, würde diese Ausgaben verändern — er würde Belege verfälschen.
+      - id: end-of-file-fixer
+        name: Zeilenumbruch am Dateiende
+        exclude: '\.ipynb$'
+      - id: trailing-whitespace
+        name: Leerzeichen am Zeilenende
+        args: [--markdown-linebreak-ext=md]
+        exclude: '\.ipynb$'
+      - id: check-yaml
+        name: YAML gültig (params.yaml, Workflows)
+      - id: check-toml
+        name: TOML gültig (pyproject.toml)
+      - id: check-json
+        name: JSON gültig
+        exclude: '\.ipynb$'      # Notebooks prüft nbformat besser
+      - id: check-merge-conflict
+        name: keine Konfliktmarkierungen
+      - id: check-added-large-files
+        name: keine großen Dateien
+        # Die Rohdatei (510 KB) und die Referenzstichprobe (51 KB) sollen durch,
+        # ein versehentlich eingechecktes Modell (900 KB) nicht.
+        args: [--maxkb=600]
+      - id: debug-statements
+        name: keine vergessenen Haltepunkte
+
+  # ── Notebooks ───────────────────────────────────────────────────────
+  # Ausgaben aus den Notebooks entfernen wir NICHT: Die Belege in den Notebooks
+  # (Tabellen, Abbildungen, gemessene Werte) sind Teil der Abgabe und sollen
+  # sichtbar bleiben, ohne dass jemand alles neu ausführen muss. Geprüft wird
+  # nur, dass die Dateien gültiges Notebook-Format haben.
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
+        name: Notebook-Format prüfen (ohne Ausgaben zu löschen)
+        args: [--keep-output, --keep-count]

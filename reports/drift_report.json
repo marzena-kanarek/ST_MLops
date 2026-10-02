@@ -1,0 +1,85 @@
+{
+  "checked_at": "2026-10-02T06:58:37+00:00",
+  "source": "data/processed/val.parquet",
+  "reference_rows": 1000,
+  "current_rows": 1500,
+  "min_rows": 100,
+  "enough_data": true,
+  "verdict": "stabil",
+  "thresholds": {
+    "psi_warn": 0.1,
+    "psi_alarm": 0.25,
+    "alpha": 0.05
+  },
+  "features": [
+    {
+      "Merkmal": "rotational_speed_rpm",
+      "PSI": 0.0023,
+      "Urteil": "stabil",
+      "Test": "KS",
+      "Statistik": 0.0133,
+      "p-Wert": 0.999902,
+      "signifikant": false,
+      "Referenz Mittel": 1535.703,
+      "Aktuell Mittel": 1538.426
+    },
+    {
+      "Merkmal": "air_temperature_k",
+      "PSI": 0.0019,
+      "Urteil": "stabil",
+      "Test": "KS",
+      "Statistik": 0.0113,
+      "p-Wert": 0.999998,
+      "signifikant": false,
+      "Referenz Mittel": 299.997,
+      "Aktuell Mittel": 299.989
+    },
+    {
+      "Merkmal": "tool_wear_min",
+      "PSI": 0.0017,
+      "Urteil": "stabil",
+      "Test": "KS",
+      "Statistik": 0.0093,
+      "p-Wert": 1.0,
+      "signifikant": false,
+      "Referenz Mittel": 106.424,
+      "Aktuell Mittel": 106.328
+    },
+    {
+      "Merkmal": "process_temperature_k",
+      "PSI": 0.0016,
+      "Urteil": "stabil",
+      "Test": "KS",
+      "Statistik": 0.0107,
+      "p-Wert": 1.0,
+      "signifikant": false,
+      "Referenz Mittel": 309.998,
+      "Aktuell Mittel": 309.99
+    },
+    {
+      "Merkmal": "type",
+      "PSI": 0.0011,
+      "Urteil": "stabil",
+      "Test": "Chi²",
+      "Statistik": 0.6331,
+      "p-Wert": 0.728664,
+      "signifikant": false,
+      "Referenz Mittel": "—",
+      "Aktuell Mittel": "—"
+    },
+    {
+      "Merkmal": "torque_nm",
+      "PSI": 0.0008,
+      "Urteil": "stabil",
+      "Test": "KS",
+      "Statistik": 0.0087,
+      "p-Wert": 1.0,
+      "signifikant": false,
+      "Referenz Mittel": 40.188,
+      "Aktuell Mittel": 40.075
+    }
+  ],
+  "operations": {
+    "threshold": 0.06
+  }
+}

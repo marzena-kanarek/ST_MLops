@@ -1,0 +1,73 @@
+# Abbild der Vorhersage-Schnittstelle (Etappe 21).
+#
+# Ziel: Das Projekt läuft auf einem Rechner, auf dem kein Python installiert ist.
+#
+# Bauen und starten:
+#     docker compose up --build
+#     curl http://localhost:8000/health
+#
+# Oder ohne compose:
+#     docker build -f Dockerfile.api -t predictive-maintenance-api .
+#     docker run --rm -p 8000:8000 predictive-maintenance-api
+#
+# Voraussetzung: models/model.joblib muss vorliegen. Es liegt nicht im Git und
+# entsteht durch "python -m src.pipelines.run_pipeline". Fehlt es, bricht der
+# COPY-Befehl unten ab — absichtlich, denn ein Abbild ohne Modell wäre nutzlos.
+
+# ── Stufe 1: Pakete bauen ──────────────────────────────────────────────
+# Zwei Stufen, damit pip, Übersetzerreste und der Paketspeicher nicht im
+# fertigen Abbild landen. Installiert wird in eine eigene Umgebung unter
+# /opt/venv, die in die zweite Stufe kopiert wird.
+FROM python:3.11-slim AS bauen
+
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Erst die Anforderungsdatei, dann (in der nächsten Stufe) der Code: Docker
+# speichert jede Schicht zwischen, und eine Codeänderung soll nicht dazu führen,
+# dass pip alles neu installiert.
+COPY requirements-api.txt /tmp/requirements-api.txt
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/pip install --upgrade pip \
+    && /opt/venv/bin/pip install -r /tmp/requirements-api.txt
+
+# ── Stufe 2: Laufzeit ──────────────────────────────────────────────────
+FROM python:3.11-slim AS laufzeit
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    PYTHONPATH=/app \
+    LOG_LEVEL=INFO
+
+# PYTHONPATH=/app ist Absicht und nicht überflüssig: uvicorn legt zwar das
+# Arbeitsverzeichnis selbst auf den Suchpfad, aber sich darauf zu verlassen
+# macht den Start von einem Verhalten abhängig, das sich ändern kann.
+
+COPY --from=bauen /opt/venv /opt/venv
+
+WORKDIR /app
+
+# Ein eigener Benutzer ohne Rechte. Ein Dienst, der nur Vorhersagen liefert,
+# braucht kein root — und wenn er doch einmal übernommen wird, soll der
+# Angreifer nicht als root im Container stehen. reports/ wird hier angelegt,
+# weil der Dienst dort seine Protokolle schreibt (Etappe 17).
+RUN useradd --create-home --uid 10001 dienst \
+    && mkdir -p /app/reports \
+    && chown -R dienst:dienst /app
+
+COPY --chown=dienst:dienst src/ src/
+COPY --chown=dienst:dienst params.yaml .
+COPY --chown=dienst:dienst models/model.joblib models/
+
+USER dienst
+
+EXPOSE 8000
+
+# Der Container meldet sich selbst als gesund oder krank. --start-period gibt
+# dem Laden des Modells Zeit, ohne dass der Container in dieser Zeit als
+# fehlerhaft gilt.
+HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+
+CMD ["uvicorn", "src.serving.api:app", "--host", "0.0.0.0", "--port", "8000"]

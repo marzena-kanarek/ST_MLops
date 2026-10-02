@@ -1,0 +1,40 @@
+{
+  "kennzahlen": {
+    "pr_auc": 0.8603838095898327,
+    "roc_auc": 0.9519952908699711,
+    "recall": 0.8627450980392157,
+    "precision": 0.5116279069767442,
+    "kosten_eur": 126200.0,
+    "schwelle": 0.06,
+    "tp": 44,
+    "fp": 42,
+    "fn": 7
+  },
+  "hyperparameter": {
+    "n_estimators": 150,
+    "max_depth": 10,
+    "max_features": 0.5,
+    "min_samples_leaf": 5,
+    "class_weight": null
+  },
+  "herkunft": {
+    "raw_data_sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e",
+    "git_commit": "2fbf5d8+dirty",
+    "seed": 42,
+    "python": "3.13.7",
+    "plattform": "Darwin arm64",
+    "ausfuehrbares_python": "/Users/marzenakanarek/Documents/GitHub/ML Operationalisierung/ST_MLops/.venv/bin/python"
+  },
+  "bibliotheken": {
+    "python": "3.13.7",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "mlflow": "3.16.1"
+  },
+  "qualitaetsschranke": {
+    "bestanden": true,
+    "verstoesse": []
+  }
+}

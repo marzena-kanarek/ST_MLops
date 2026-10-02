@@ -1,0 +1,59 @@
+{
+  "kennzahlen_test": {
+    "pr_auc": 0.9375940197147975,
+    "roc_auc": 0.9842893679210815,
+    "recall": 0.9607843137254902,
+    "precision": 0.47115384615384615,
+    "schwelle": 0.06,
+    "tp": 49,
+    "fp": 55,
+    "fn": 2,
+    "tn": 1394,
+    "kosten_eur": 86700.0,
+    "kosten_nichts_tun_eur": 510000.0,
+    "ersparnis_eur": 423300.0
+  },
+  "vertrauensintervall_test": {
+    "verfahren": "Ziehen mit Zurücklegen, 2000 Wiederholungen, 95 %",
+    "pr_auc": [
+      0.8775,
+      0.9861
+    ],
+    "recall": [
+      0.9,
+      1.0
+    ]
+  },
+  "kennzahlen_validierung": {
+    "pr_auc": 0.8603838095898327,
+    "roc_auc": 0.9519952908699711,
+    "recall": 0.8627450980392157,
+    "precision": 0.5116279069767442,
+    "kosten_eur": 126200.0,
+    "schwelle": 0.06,
+    "tp": 44,
+    "fp": 42,
+    "fn": 7
+  },
+  "testmenge": {
+    "zeilen": 1500,
+    "ausfaelle": 51,
+    "ausfallrate": 0.034
+  },
+  "schwelle_aus_params": 0.06,
+  "schwelle_aus_modell": 0.06,
+  "herkunft": {
+    "model_sha256": "1ab705adc9bbdee83bcb12f08a98c23deab9747bfcc0f4e5bdaf1b09064404aa",
+    "raw_data_sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e",
+    "git_commit": "2fbf5d8+dirty",
+    "seed": 42
+  },
+  "qualitaetsschranke": {
+    "min_pr_auc": 0.75,
+    "min_recall": 0.8,
+    "max_expected_cost_eur": 200000
+  },
+  "gemessen_am": "2026-10-02T11:51:10+00:00",
+  "erster_lauf": false,
+  "wiederholungsgrund": "Modell auf dem Abgaberechner neu erzeugt (bitgleich reproduzierbar); Daten, Parameter und Schwellenwert unveraendert, keine Entscheidung nach dem ersten Ergebnis geaendert."
+}

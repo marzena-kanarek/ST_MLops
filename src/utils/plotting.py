@@ -16,13 +16,15 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-FIGURES_DIR = PROJECT_ROOT / "reports" / "figures"
+from src.config import PATHS
+
+#: Ablageort aller Abbildungen (params.yaml: ``paths.figures_dir``).
+FIGURES_DIR = PATHS.figures
 
 #: Kategorienfarben in fester Reihenfolge — nie rotieren, nie neu zuweisen.
 FARBEN: dict[str, str] = {
-    "kein_ausfall": "#2E5FA3",   # Blau
-    "ausfall": "#D1690E",        # Orange
+    "kein_ausfall": "#2E5FA3",  # Blau
+    "ausfall": "#D1690E",  # Orange
     "neutral": "#8C9BAA",
     "text": "#1A1A1A",
     "text_sekundaer": "#5B6B7B",
@@ -64,7 +66,7 @@ def setze_stil() -> None:
             "axes.spines.top": False,
             "axes.spines.right": False,
             "axes.grid": True,
-            "axes.axisbelow": True,          # Gitter hinter die Marken
+            "axes.axisbelow": True,  # Gitter hinter die Marken
             "grid.color": FARBEN["gitter"],
             "grid.linewidth": 0.7,
             "xtick.color": FARBEN["text_sekundaer"],

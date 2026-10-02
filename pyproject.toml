@@ -1,7 +1,10 @@
 [project]
 name = "mlops"
 version = "0.1.0"
-requires-python = ">=3.11"
+# Der Code nutzt keine Sprachmerkmale jenseits 3.10. Die niedrigere Untergrenze
+# hält das Projekt im Container und in der CI breiter lauffähig; entwickelt wird
+# auf 3.13.
+requires-python = ">=3.10"
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -12,11 +15,31 @@ include = ["src*"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+# Muss zur Untergrenze oben passen: Bei "py311" würde ruff Modernisierungen
+# vorschlagen (etwa datetime.UTC statt timezone.utc), die unter 3.10 brechen.
+target-version = "py310"
+extend-exclude = ["notebooks"]   # Werkstatt, siehe [tool.ruff.lint] unten
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
+# E/W Stilregeln (pycodestyle), F Fehler (pyflakes), I Importordnung (isort),
+# UP Modernisierung (pyupgrade), B häufige Fallen (flake8-bugbear),
+# C4 unnötige Zwischenlisten (comprehensions).
+#
+# Die Notebooks sind ausgenommen: Dort sind lange Ausdrücke, Variablen für die
+# Anzeige und Importe mitten im Dokument gewollt. Die Fabrik in src/ wird
+# geprüft, die Werkstatt nicht.
+select = ["E", "W", "F", "I", "UP", "B", "C4"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+markers = [
+    "langsam: Test braucht ein trainiertes Modell oder die aufgeteilten Daten",
+]
+filterwarnings = [
+    # Erwartetes Verhalten: OneHotEncoder(handle_unknown="ignore") warnt bei
+    # unbekannten Kategorien. Genau das wird in test_model.py geprueft.
+    "ignore:Found unknown categories:UserWarning",
+    # Hinweis von starlette zur Testclient-Bibliothek - betrifft nicht das Projekt.
+    "ignore:Using `httpx` with `starlette.testclient`:",
+]

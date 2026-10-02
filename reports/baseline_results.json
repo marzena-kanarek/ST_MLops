@@ -1,0 +1,29 @@
+{
+  "positiv_anteil_train": 0.033857142857142856,
+  "ergebnisse": [
+    {
+      "Modell": "Kein Alarm (immer 0)",
+      "PR-AUC": 0.034,
+      "ROC-AUC": 0.5,
+      "Recall": 0.0,
+      "Precision": 0.0,
+      "Kosten EUR": 510000.0
+    },
+    {
+      "Modell": "Zufall (stratifiziert)",
+      "PR-AUC": 0.03703743315508022,
+      "ROC-AUC": 0.5216173425892096,
+      "Recall": 0.0784313725490196,
+      "Precision": 0.07272727272727272,
+      "Kosten EUR": 498700.0
+    },
+    {
+      "Modell": "Logistische Regression",
+      "PR-AUC": 0.3567881073939153,
+      "ROC-AUC": 0.8430695949877536,
+      "Recall": 0.1568627450980392,
+      "Precision": 0.8,
+      "Kosten EUR": 437400.0
+    }
+  ]
+}

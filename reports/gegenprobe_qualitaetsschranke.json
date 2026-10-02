@@ -1,0 +1,44 @@
+{
+  "kennzahlen": {
+    "pr_auc": 0.6472737910491919,
+    "roc_auc": 0.9264063113167972,
+    "recall": 0.45098039215686275,
+    "precision": 0.696969696969697,
+    "kosten_eur": 303400.0,
+    "schwelle": 0.06,
+    "tp": 23,
+    "fp": 10,
+    "fn": 28
+  },
+  "hyperparameter": {
+    "n_estimators": 150,
+    "max_depth": 1,
+    "max_features": 0.5,
+    "min_samples_leaf": 5,
+    "class_weight": null
+  },
+  "herkunft": {
+    "raw_data_sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e",
+    "git_commit": "2fbf5d8+dirty",
+    "seed": 42,
+    "python": "3.13.7",
+    "plattform": "Darwin arm64",
+    "ausfuehrbares_python": "/Users/marzenakanarek/Documents/GitHub/ML Operationalisierung/ST_MLops/.venv/bin/python"
+  },
+  "bibliotheken": {
+    "python": "3.13.7",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "mlflow": "3.16.1"
+  },
+  "qualitaetsschranke": {
+    "bestanden": false,
+    "verstoesse": [
+      "PR-AUC — 0.647 liegt unter der Mindestanforderung 0.75",
+      "Recall — 0.451 liegt unter der Mindestanforderung 0.8",
+      "erwartete Kosten — 303.400 EUR übersteigen die Obergrenze 200.000 EUR"
+    ]
+  }
+}

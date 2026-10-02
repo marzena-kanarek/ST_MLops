@@ -22,16 +22,19 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-import yaml
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-PARAMS_PATH = PROJECT_ROOT / "params.yaml"
+from src.config import PARAMS_PATH, PROJECT_ROOT, load_params
 
-
-def load_params(pfad: Path = PARAMS_PATH) -> dict[str, Any]:
-    """Liest params.yaml ein."""
-    with open(pfad, encoding="utf-8") as handle:
-        return yaml.safe_load(handle)
+# load_params liegt seit Etappe 14 in src/config.py. Hier bleibt der Name
+# verfuegbar, damit bestehende Importe in Notebooks und Modulen weiter gelten.
+__all__ = [
+    "PARAMS_PATH",
+    "PROJECT_ROOT",
+    "ValidationResult",
+    "load_contract",
+    "load_params",
+    "validate_dataframe",
+]
 
 
 def load_contract(pfad: Path = PARAMS_PATH) -> dict[str, Any]:

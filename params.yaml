@@ -99,13 +99,135 @@ data_contract:
       allowed: [0, 1]
       beschreibung: "Zielgröße"
 
+# ── Modellwahl (Etappe 9) ──────────────────────────────────────────────
+# Gewählt wurde der Random Forest: bester Wert in der Kreuzvalidierung
+# (0,907 gegenüber 0,865 für XGBoost und 0,503 für die logistische Regression)
+# und zugleich das einfachere Verfahren mit weniger Abhängigkeiten.
+#
+# Die Zufallssuche fand 379 Bäume. Bewusst eingetragen sind 150: Sie liefern
+# dieselbe Güte (0,860 statt 0,861) bei halber Antwortzeit und einem Drittel
+# der Modellgröße. Begründung in notebooks/05_model_comparison.ipynb.
+model:
+  name: "random_forest"
+  registry_name: "predictive-maintenance"   # Name im MLflow-Modellregister
+  random_forest:
+    n_estimators: 150          # Suche fand 379, siehe Begründung oben
+    max_depth: 10
+    max_features: 0.5
+    min_samples_leaf: 5
+    class_weight: null         # "balanced" schnitt messbar schlechter ab
+
 # ── Fehlerkosten (Annahme, siehe README) ───────────────────────────────
 costs:
   false_negative_eur: 10000     # übersehener Ausfall
   false_positive_eur: 500       # Fehlalarm
   true_positive_eur: 800        # geplante Wartung
 
+# ── Entscheidungsregel (Etappe 10) ─────────────────────────────────────
+# Gesucht auf der Validierungsmenge als der Schwellenwert mit den geringsten
+# erwarteten Kosten. 0,06 statt der Voreinstellung 0,50: Das spart in der
+# Validierungsmenge 43.900 EUR (170.100 -> 126.200) und hebt den Recall von
+# 0,725 auf 0,863. Begründung in notebooks/06_decision_threshold.ipynb.
+decision:
+  threshold: 0.06
+  # Raster, auf dem die Kostenkurve ausgewertet wird. 99 Schritte von 0,01 bis
+  # 0,99: fein genug, um das Minimum zu finden, ohne 0 und 1 einzuschließen
+  # (bei 0 wird alles zum Alarm, bei 1 nichts).
+  grid:
+    start: 0.01
+    stop: 0.99
+    steps: 99
+
 # ── Qualitätsschranke (Etappe 12) ──────────────────────────────────────
+# Mindestanforderungen, die ein Modell erfüllen muss, bevor es gespeichert und
+# registriert wird. Geprüft wird auf der Validierungsmenge, beim festgelegten
+# Entscheidungsschwellenwert. Ein Modell, das hier durchfällt, überschreibt das
+# bisherige nicht.
 quality_gate:
   min_pr_auc: 0.75
   min_recall: 0.80
+  # Obergrenze der erwarteten Kosten auf der Validierungsmenge (1.500 Zeilen,
+  # 51 Ausfälle). Nichtstun kostet dort 510.000 EUR, das gewählte Modell
+  # 126.200 EUR. 200.000 EUR lassen Luft nach oben, schlagen aber deutlich an,
+  # wenn ein Lauf erkennbar schlechter wird.
+  max_expected_cost_eur: 200000
+
+# ── Modellvergleich (Etappe 9) ─────────────────────────────────────────
+# Die Einstellungen der drei Kandidaten für den Vergleich. Bewusst
+# unabgestimmte Startwerte: Verglichen werden die Verfahren, nicht die
+# Feinarbeit. Abgestimmt wird erst danach, und nur der Gewinner.
+comparison:
+  logistic_regression:
+    max_iter: 1000
+  random_forest:
+    n_estimators: 300
+    max_depth: 15
+  xgboost:
+    n_estimators: 300
+    max_depth: 5
+    learning_rate: 0.1
+
+# ── Abstimmung der Hyperparameter (Etappe 9) ───────────────────────────
+tuning:
+  cv_folds: 5       # geschichtete Kreuzvalidierung
+  n_iter: 30        # Versuche der Zufallssuche
+
+# ── Protokollierung (Etappe 11) ────────────────────────────────────────
+# SQLite statt reiner Dateien, weil das Modellregister eine Datenbank braucht.
+# Über die Umgebungsvariable MLFLOW_TRACKING_URI umstellbar.
+tracking:
+  experiment: "predictive-maintenance"
+  backend_store: "mlflow.db"
+
+# ── Überwachung und Drift (Etappe 18) ──────────────────────────────────
+# Die Referenzstichprobe ist der Maßstab: Ohne sie kann man keine Drift messen.
+# Sie entsteht am Ende jedes Pipelinelaufs aus der Validierungsmenge — nicht aus
+# der Trainingsmenge, weil die Wahrscheinlichkeiten auf gelernten Zeilen zu
+# extrem ausfallen und als Maßstab für den Betrieb unbrauchbar wären.
+monitoring:
+  reference_sample: "data/processed/reference_sample.csv"
+  sample_size: 1000
+  drift_report: "reports/drift_report.json"
+  simulation_report: "reports/drift_simulation.json"
+
+  psi_bins: 10
+  # Übliche Deutung des Population Stability Index:
+  #   < 0,10          stabil
+  #   0,10 bis 0,25   beobachten
+  #   > 0,25          Handlungsbedarf
+  psi_warn: 0.10
+  psi_alarm: 0.25
+  # Signifikanzniveau für Kolmogorow-Smirnow (numerisch) und Chi² (kategorial).
+  alpha: 0.05
+  # Mindestzahl aktueller Zeilen, unter der nicht geurteilt wird: Bei 20 Zeilen
+  # schlägt jeder Test irgendwann zufällig an.
+  min_rows: 100
+
+# ── Protokollierung (Etappe 17) ────────────────────────────────────────
+# Zwei verschiedene Protokolle, die nicht verwechselt werden dürfen:
+#
+#   app_log            — was der Dienst tut (Start, Fehler, Warnungen). Für
+#                        Menschen, über das logging-Modul geschrieben.
+#   predictions_*      — was der Dienst entschieden hat, eine Zeile je Vorhersage.
+#                        Für Auswertung und für die Driftprüfung in Etappe 18.
+#
+# JSONL ist der einfachste Einstieg, SQLite ist per SQL auswertbar. Hier laufen
+# beide: die JSONL-Datei ist lesbar und anhängbar, die Datenbank abfragbar.
+logging:
+  level: "INFO"
+  app_log: "reports/api.log"
+  predictions_jsonl: "reports/predictions.jsonl"
+  predictions_sqlite: "reports/predictions.db"
+  # Die Eingangswerte mitschreiben. Hier richtig, weil Maschinendaten keine
+  # personenbezogenen Daten sind — bei personenbezogenen Eingaben müsste dieser
+  # Schalter auf false stehen und die Driftprüfung mit Kennzahlen statt mit
+  # Rohwerten arbeiten.
+  log_inputs: true
+
+# ── Schnittstelle (Etappe 16) ──────────────────────────────────────────
+api:
+  host: "0.0.0.0"   # im Container nötig, damit der Dienst von außen erreichbar ist
+  port: 8000
+  title: "Predictive Maintenance API"
+  version: "0.1.0"
+  model_file: "models/model.joblib"

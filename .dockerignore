@@ -1,0 +1,42 @@
+# Was NICHT an den Docker-Daemon geschickt wird (Etappe 21).
+#
+# Ohne diese Datei packt "docker build" den ganzen Projektordner ein und schickt
+# ihn als Kontext an den Daemon — mitsamt .venv, mlruns und Rohdaten. Das dauert
+# lange und hat keinen Nutzen: Ins Abbild kommt nur, was die COPY-Befehle im
+# Dockerfile nennen.
+
+# Entwicklungsumgebung
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Daten und Laufdaten — die Schnittstelle braucht keine davon
+data/
+mlruns/
+mlflow.db*
+reports/
+
+# Modelle: model.joblib wird ausdrücklich kopiert, alles andere nicht
+models/*
+!models/model.joblib
+
+# Werkstatt, Dokumentation, Werkzeuge
+notebooks/
+tests/
+scripts/
+monitoring/
+references/
+.github/
+*.md
+.git/
+.gitignore
+.pre-commit-config.yaml
+.vscode/
+*.code-workspace
+.DS_Store
+.env

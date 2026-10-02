@@ -1,0 +1,87 @@
+# Lauf nach Zeitplan (Etappe 20, Ausbaustufe zu Etappe 18).
+#
+# Dieser Ablauf macht eine Zusage aus dem Überwachungskonzept ausführbar. Dort
+# steht unter "Wann wird neu trainiert":
+#
+#   "Nach Zeitplan — halbjährlich, auch ohne Auffälligkeit. Ein Lauf, der nichts
+#    verändert, ist der Beweis, dass die Kette noch funktioniert; dieser Nachweis
+#    verfällt, wenn man ihn nie führt."
+#
+# Genau das passiert hier: Die ganze Kette wird von den Rohdaten her neu
+# gerechnet und die Überwachung gegen ihre eigenen Driftszenarien geprüft.
+# Schlägt etwas an, ist der Lauf rot — ohne dass jemand daran gedacht hätte.
+#
+# Wöchentlich und nicht halbjährlich, aus zwei praktischen Gründen: Ein
+# Zeitplanablauf wird von GitHub nach 60 Tagen ohne Bewegung im Repository
+# abgeschaltet, und ein wöchentlicher Lauf kostet bei diesem Datenumfang
+# ungefähr eine Minute Rechenzeit.
+#
+# Was dieser Lauf NICHT prüfen kann: echte Betriebsdaten. Es gibt in diesem
+# Prototyp keinen laufenden Dienst, dessen Protokoll man gegen die Referenz
+# halten könnte. Im Betrieb wäre genau das der Inhalt dieses Ablaufs
+# (python -m src.monitoring.drift gegen das Vorhersageprotokoll); hier bleibt
+# es bei der Wiederholbarkeitsprobe und dem Nachweis, dass die Maße anschlagen.
+
+name: Überwachung (Zeitplan)
+
+on:
+  schedule:
+    # Montags 06:17 UTC. Eine ungerade Minute mit Absicht: Zur Minute 0 laufen
+    # bei GitHub sehr viele Zeitpläne gleichzeitig an, und der eigene Lauf
+    # startet dann mit Verzögerung.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  wiederholbarkeit:
+    name: Kette und Überwachung nachrechnen
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Pakete installieren
+        run: python -m pip install -r requirements.txt
+
+      - name: Hash der Rohdaten lesen
+        id: daten
+        run: echo "sha=$(grep -oE '[0-9a-f]{64}' params.yaml | head -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Rohdaten aus dem Zwischenspeicher
+        id: speicher
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: rohdaten-${{ steps.daten.outputs.sha }}
+
+      - name: Rohdaten holen
+        if: steps.speicher.outputs.cache-hit != 'true'
+        run: python scripts/fetch_data.py
+
+      - name: Kette durchrechnen
+        run: python -m src.pipelines.run_pipeline --no-mlflow
+
+      # Die im Repository liegende Referenzstichprobe gegen die gerade neu
+      # erzeugte halten. Weicht sie ab, hat sich etwas an Daten, Aufteilung oder
+      # Modell verändert, ohne dass die Referenz nachgezogen wurde.
+      - name: Referenzstichprobe unverändert?
+        run: |
+          git diff --exit-code -- data/processed/reference_sample.csv \
+            || { echo "::warning::Die Referenzstichprobe hat sich verändert — bitte prüfen und mit einchecken."; exit 1; }
+
+      - name: Überwachung nachweisen
+        run: python -m src.monitoring.simulate_drift --details
+
+      - name: Berichte mitnehmen
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ueberwachung-${{ github.run_number }}
+          path: reports/
+          retention-days: 90
