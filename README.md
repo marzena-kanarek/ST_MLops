@@ -491,79 +491,10 @@ Der Zielzustand eines produktionsnahen Betriebs in sechs Stufen. Der Hauptfluss
 verläuft von der Entwicklungsumgebung bis zur Überwachung, die gestrichelte
 Rückkopplung schließt den Kreis zum Training.
 
-Die Umrandung trennt Soll und Ist: **ausgefüllt** = im Prototyp umgesetzt und
-durch Läufe belegt, **weiß mit durchgezogenem Rand** = vorhanden, aber nicht
-produktionsreif, **gestrichelt** = für den Zielzustand nötig, im Prototyp nicht
-vorhanden.
+Die Einfärbung trennt Soll und Ist — die Legende steht unten im Bild. Unter den
+sechs Stufen liegt das Band der Verantwortlichkeiten.
 
-```mermaid
-flowchart LR
-    subgraph s1["1 · Entwicklungsumgebung"]
-        direction TB
-        repo["Repository<br/>Git, Historie, Tags"]:::ist
-        review["Branch-Schutz + Review<br/>Pull Request, Vier-Augen-Prinzip"]:::fehlt
-        umg["Einheitliche Umgebung<br/>Abhängigkeiten gepinnt"]:::ist
-    end
-
-    subgraph s2["2 · CI/CD"]
-        direction TB
-        pruef["Automatische Prüfung<br/>150 Tests, ruff, Py 3.10/3.11/3.13"]:::ist
-        bau["Abbild bauen<br/>zweistufig, ohne Rootrechte"]:::ist
-        creg["Container-Registry<br/>feste Marken statt latest"]:::fehlt
-    end
-
-    subgraph s3["3 · Daten und Training"]
-        direction TB
-        speicher["Versionierter Datenspeicher<br/>heute: Hash einer festen Datei"]:::teil
-        vertrag["Datenvertrag<br/>harte und weiche Grenzen"]:::ist
-        train["Trainingsprozess<br/>Startwert, Manifest, Tracking"]:::teil
-        gate["Qualitätsschranke<br/>PR-AUC ≥ 0,75 · Recall ≥ 0,80<br/>Kosten ≤ 200.000 €"]:::ist
-    end
-
-    subgraph s4["4 · Modellverwaltung"]
-        direction TB
-        mreg["Modell-Registry<br/>Alias champion, Rollback"]:::teil
-        frei["Freigabe<br/>Entscheidung durch Menschen"]:::fehlt
-    end
-
-    subgraph s5["5 · Deployment und Betrieb"]
-        direction TB
-        roll["Ausrollen<br/>blau/grün, Rückfallweg"]:::fehlt
-        last["Lastverteilung<br/>mehrere Instanzen"]:::fehlt
-        dienst["Inferenzdienst<br/>FastAPI im Container"]:::ist
-        schnitt["Inferenzschnittstelle<br/>Auth + Ratenlimit"]:::teil
-    end
-
-    subgraph s6["6 · Überwachung"]
-        direction TB
-        applog["Anwendungsprotokoll<br/>zentral eingesammelt"]:::teil
-        vlog["Vorhersageprotokoll<br/>JSONL und SQLite"]:::ist
-        kennz["Betriebskennzahlen<br/>Prometheus"]:::ist
-        drift["Driftmessung<br/>PSI · KS · Chi²"]:::ist
-        alarm["Alerting<br/>Meldung an die Bereitschaft"]:::fehlt
-    end
-
-    repo ~~~ review ~~~ umg
-    pruef ~~~ bau ~~~ creg
-    speicher ~~~ vertrag ~~~ train ~~~ gate
-    mreg ~~~ frei
-    roll ~~~ last ~~~ dienst ~~~ schnitt
-    applog ~~~ vlog ~~~ kennz ~~~ drift ~~~ alarm
-
-    s1 --> s2 --> s3 --> s4 --> s5 --> s6
-    s6 -. "Drift-Alarm und bestätigte Befunde lösen Neutrainieren aus" .-> s3
-
-    classDef ist fill:#E4EDF6,stroke:#1F4E79,stroke-width:2px,color:#1A1A1A
-    classDef teil fill:#FFFFFF,stroke:#2E79B5,stroke-width:2px,color:#1A1A1A
-    classDef fehlt fill:#FFFFFF,stroke:#7B8794,stroke-width:1px,stroke-dasharray:5 4,color:#5B6B7B
-
-    style s1 fill:#F7F9FB,stroke:#D6DDE4
-    style s2 fill:#F7F9FB,stroke:#D6DDE4
-    style s3 fill:#F7F9FB,stroke:#D6DDE4
-    style s4 fill:#F7F9FB,stroke:#D6DDE4
-    style s5 fill:#F7F9FB,stroke:#D6DDE4
-    style s6 fill:#F7F9FB,stroke:#D6DDE4
-```
+![Zielarchitektur für den produktionsnahen Betrieb](reports/figures/19_zielarchitektur.png)
 
 ### Verantwortlichkeiten
 
@@ -592,9 +523,9 @@ Modellverwaltung — ein schlechteres Modell erreicht das Register nicht und
 Überwachung, nicht bei einem Zeitplan: Neu trainiert wird, weil sich etwas
 geändert hat, nicht weil ein Monat vergangen ist.
 
-Als Bilddatei für Präsentationen und Berichte:
-`reports/figures/19_zielarchitektur.png` — die Abbildung ist die gerenderte
-Fassung des Diagramms oben, nicht eine zweite Zeichnung.
+Die Abbildung oben liegt als `reports/figures/19_zielarchitektur.png` im
+Repository und wird im Reflexionsreport unverändert verwendet — eine Quelle,
+eine Darstellung.
 
 ---
 
