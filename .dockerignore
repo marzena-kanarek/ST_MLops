@@ -1,4 +1,4 @@
-# Was NICHT an den Docker-Daemon geschickt wird (Etappe 21).
+# Was NICHT an den Docker-Daemon geschickt wird.
 #
 # Ohne diese Datei packt "docker build" den ganzen Projektordner ein und schickt
 # ihn als Kontext an den Daemon — mitsamt .venv, mlruns und Rohdaten. Das dauert
@@ -15,17 +15,17 @@ __pycache__/
 .ruff_cache/
 .ipynb_checkpoints/
 
-# Daten und Laufdaten — die Schnittstelle braucht keine davon
+# Daten und Laufdaten
 data/
 mlruns/
 mlflow.db*
 reports/
 
-# Modelle: model.joblib wird ausdrücklich kopiert, alles andere nicht
+# Modelle
 models/*
 !models/model.joblib
 
-# Werkstatt, Dokumentation, Werkzeuge
+# Werkzeuge
 notebooks/
 tests/
 scripts/

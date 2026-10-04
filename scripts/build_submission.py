@@ -1,4 +1,3 @@
-"""ZIP-Archiv für die Abgabe bauen (Etappe 22).
 
 Das Archiv enthält mehr als das Git-Repository: Die **Rohdatei** kommt mit, damit
 die Kette ohne Internetzugang läuft, und das **trainierte Modell**, damit die

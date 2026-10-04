@@ -1,22 +1,17 @@
 # Überwachungskonzept
 
-Vorausschauende Wartung, AI4I-2020-Prototyp. Stand: Etappe 18.
+Vorausschauende Wartung, AI4I-2020-Prototyp. 
 
 Dieses Dokument beantwortet fünf Fragen: **was** gemessen wird, **in welchem
 Takt**, **welcher Schwellenwert welche Reaktion** auslöst, **wer** die Meldung
-bekommt und **wann neu trainiert** wird. Abschnitt 6 benennt die größte Lücke
-zum Produktionsbetrieb.
+bekommt und **wann neu trainiert** wird. 
 
-Ein ML-Modell verfällt leise. Niemand bekommt eine Fehlermeldung, wenn ein
-Sensor neu kalibriert wird — die Güte sinkt einfach. Genau dagegen ist dieses
-Konzept geschrieben.
 
 ---
 
 ## 1. Was wird gemessen
 
-Drei Ebenen, bewusst alle drei. Jede allein führt in die Irre; Abschnitt 3 zeigt
-mit gemessenen Zahlen, warum.
+Drei Ebenen, bewusst alle drei. Jede allein führt in die Irre.
 
 ### 1.1 Datendrift — verschieben sich die Eingangsverteilungen?
 
@@ -36,9 +31,6 @@ und mit im Git. Bewusst die Validierungs- und nicht die Trainingsmenge — auf
 gelernten Zeilen sagt ein Random Forest beinahe 0 oder 1, diese Verteilung wäre
 als Betriebsmaßstab unbrauchbar.
 
-Vergleichsdaten sind im Betrieb die protokollierten Anfragen aus Etappe 17, also
-das, was die Schnittstelle tatsächlich gesehen hat — nicht eine Testdatei.
-
 ### 1.2 Vorhersagedrift — verschiebt sich die Verteilung der Wahrscheinlichkeiten?
 
 PSI über die ausgegebenen Wahrscheinlichkeiten, dazu die Alarmquote. Der
@@ -53,7 +45,7 @@ Protokollschreibvorgänge.
 ### 1.4 Modellgüte
 
 PR-AUC, Recall, Precision und erwartete Kosten — messbar **erst**, wenn wahre
-Labels vorliegen (Abschnitt 6).
+Labels vorliegen.
 
 ---
 
@@ -64,7 +56,7 @@ Labels vorliegen (Abschnitt 6).
 | Betriebskennzahlen | laufend | `/metrics`, von einer Prometheus-Instanz abgeholt |
 | Vorhersagedrift | täglich | `python -m src.monitoring.drift` gegen das Protokoll |
 | Datendrift je Merkmal | täglich | derselbe Lauf |
-| Modellgüte | monatlich, sobald Labels da sind | Abschnitt 6 |
+| Modellgüte | monatlich, sobald Labels da sind |
 | Referenzstichprobe erneuern | bei jedem Neutraining | Pipelineschritt `referenz` |
 
 Unter **100 aktuellen Zeilen** (`monitoring.min_rows`) wird nicht geurteilt. Bei

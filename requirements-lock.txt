@@ -40,7 +40,9 @@ graphql-core==3.2.12
 graphql-relay==3.2.0
 gunicorn==26.2.0
 h11==0.16.0
+httpcore2==2.13.1
 httptools==0.8.0
+httpx2==2.13.1
 huey==3.4.0
 identify==2.6.19
 idna==3.20
@@ -76,6 +78,7 @@ mkdocs-get-deps==0.2.2
 mlflow==3.16.1
 mlflow-skinny==3.16.1
 mlflow-tracing==3.16.1
+-e git+https://github.com/marzena-kanarek/ST_MLops.git@e9a525a96d641b2275301deda343489adc1ada9e#egg=mlops
 multidict==6.9.0
 mypy_extensions==1.1.0
 narwhals==2.26.0
@@ -145,6 +148,7 @@ tifffile==2026.9.15
 tornado==6.5.10
 tqdm==4.70.1
 traitlets==5.16.1
+truststore==0.10.4
 typer==0.27.2
 typing-inspection==0.4.4
 typing_extensions==4.16.0

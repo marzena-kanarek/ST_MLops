@@ -1,4 +1,4 @@
-"""Ein- und Ausgabeformate der Schnittstelle (Etappe 16).
+"""Ein- und Ausgabeformate der Schnittstelle.
 
 **Der entscheidende Punkt an diesen Klassen:** Die Wertebereiche stehen hier
 nicht als Zahlen im Code, sondern werden aus dem Datenvertrag in ``params.yaml``

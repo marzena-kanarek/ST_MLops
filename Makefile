@@ -1,10 +1,9 @@
-# Ausführbare Dokumentation (Etappe 22).
-#
+
 # "make" allein zeigt alle Ziele mit Erklärung. Ein Makefile ist die kürzeste
 # Form von Dokumentation, weil man sie nicht lesen, sondern ausführen kann - und
 # weil sie dadurch nicht veralten kann, ohne aufzufallen.
 #
-# Voraussetzung: eine aktive virtuelle Umgebung (siehe "make setup").
+# Voraussetzung: eine aktive virtuelle Umgebung.
 
 .DEFAULT_GOAL := help
 .PHONY: help setup daten pipeline test test-schnell lint format api drift drift-probe\

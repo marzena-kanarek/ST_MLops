@@ -1,4 +1,4 @@
-"""Die einmalige Messung auf der Testmenge (Etappe 22).
+"""Die einmalige Messung auf der Testmenge.
 
 **Warum dieses Modul eine Sperre hat.** Die Testmenge ist die einzige Zahl im
 Projekt, die eine Aussage über unbekannte Daten erlaubt — und das gilt nur, wenn

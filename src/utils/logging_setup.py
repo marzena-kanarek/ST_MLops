@@ -1,4 +1,4 @@
-"""Einheitliche Protokollierung für den ganzen Dienst (Etappe 17).
+"""Einheitliche Protokollierung für den ganzen Dienst.
 
 ``print`` ist für Skripte in Ordnung und für einen laufenden Dienst falsch: Man
 kann den Detailgrad nicht steuern, die Ausgabe trägt keinen Zeitstempel, und

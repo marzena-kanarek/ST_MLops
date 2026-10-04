@@ -1,4 +1,4 @@
-"""HTTP-Schnittstelle des Modells (Etappe 16).
+"""HTTP-Schnittstelle des Modells.
 
 Starten::
 
@@ -58,7 +58,7 @@ API = PARAMS["api"]
 #: damit lifespan es beim Herunterfahren vollständig leeren kann.
 STATE: dict[str, Any] = {}
 
-#: Betriebskennzahlen im Arbeitsspeicher. Etappe 17 ergänzt die dauerhafte
+#: Betriebskennzahlen im Arbeitsspeicher. Ergänzt die dauerhafte
 #: Protokollierung; für /metrics im Prometheus-Format genügen Zähler.
 ANFANGSWERTE: dict[str, float] = {
     "requests_total": 0,

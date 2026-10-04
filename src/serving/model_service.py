@@ -1,4 +1,4 @@
-"""Das geladene Modell als Dienst (Etappe 16).
+"""Das geladene Modell als Dienst .
 
 Dieses Modul trennt zwei Dinge, die gern vermischt werden: **das Modell laden
 und befragen** (hier) und **HTTP sprechen** (in ``api.py``). Die Trennung hat

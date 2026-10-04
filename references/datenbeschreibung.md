@@ -105,5 +105,3 @@ Schritte unten und prüft den Hash selbst. Von Hand:
 2. entpacken, `ai4i2020.csv` nach `data/raw/` legen
 3. `python -m src.data.load` ausführen
 
-Für die Abgabe als ZIP über das LMS wird `data/raw/ai4i2020.csv` mit
-eingepackt, damit die Pipeline ohne Internetzugang lauffähig ist.

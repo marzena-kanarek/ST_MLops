@@ -1,4 +1,4 @@
-"""Qualitätsschranke: Mindestanforderungen ausführbar machen (Etappe 12).
+"""Qualitätsschranke: Mindestanforderungen ausführbar machen.
 
 **Warum das nötig ist:** Ohne Schranke überschreibt irgendwann ein schlechterer
 Lauf das gute Modell — unbemerkt, weil niemand jedes Mal die Kennzahlen prüft.

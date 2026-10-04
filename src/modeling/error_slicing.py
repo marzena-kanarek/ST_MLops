@@ -14,13 +14,13 @@ Zwei Sichten:
 
 **Die Ursachenspalten kommen hier zurück — als Diagnose, nicht als Merkmal.**
 ``TWF``, ``HDF``, ``PWF``, ``OSF`` und ``RNF`` dürfen dem Modell nicht gezeigt
-werden (Data Leakage, Etappe 6). Für die Fehleranalyse sind sie dagegen genau
+werden (Data Leakage). Für die Fehleranalyse sind sie dagegen genau
 richtig: Sie beantworten die Frage, welche *Art* von Ausfall das Modell
 übersieht. Gelesen werden sie aus den Rohdaten und über den Zeilenindex
 zugeordnet; in die Vorhersage geht nichts davon ein.
 
 Gerechnet wird auf der **Validierungsmenge**. Die Testmenge ist nach der
-einmaligen Messung in Etappe 22 verbraucht; sie hier noch einmal zu zerlegen
+einmaligen Messungverbraucht; sie hier noch einmal zu zerlegen
 hieße, nach dem Ergebnis weiterzusuchen.
 
 Aufruf::

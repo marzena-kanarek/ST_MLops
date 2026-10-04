@@ -43,9 +43,9 @@
   "schwelle_aus_params": 0.06,
   "schwelle_aus_modell": 0.06,
   "herkunft": {
-    "model_sha256": "1ab705adc9bbdee83bcb12f08a98c23deab9747bfcc0f4e5bdaf1b09064404aa",
+    "model_sha256": "255a268ea65bea1de0c4ae4fb3a7d6aca7767eadd53e82d114efb7dd1ea55361",
     "raw_data_sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e",
-    "git_commit": "2fbf5d8+dirty",
+    "git_commit": "e9a525a+dirty",
     "seed": 42
   },
   "qualitaetsschranke": {
@@ -53,7 +53,7 @@
     "min_recall": 0.8,
     "max_expected_cost_eur": 200000
   },
-  "gemessen_am": "2026-10-02T11:51:10+00:00",
+  "gemessen_am": "2026-10-04T22:06:27+00:00",
   "erster_lauf": false,
-  "wiederholungsgrund": "Modell auf dem Abgaberechner neu erzeugt (bitgleich reproduzierbar); Daten, Parameter und Schwellenwert unveraendert, keine Entscheidung nach dem ersten Ergebnis geaendert."
+  "wiederholungsgrund": "Modell nach sauberem Commit neu erzeugt; Daten, Parameter und Schwellenwert unveraendert"
 }

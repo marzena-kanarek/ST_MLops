@@ -1,4 +1,4 @@
-"""Herkunftsangaben für jeden Trainingslauf (Etappe 11).
+"""Herkunftsangaben für jeden Trainingslauf.
 
 Ein Lauf ist nur dann nachvollziehbar, wenn festgehalten wird, **womit** er
 gerechnet hat: welche Daten, welcher Code, welche Bibliotheksversionen. Diese

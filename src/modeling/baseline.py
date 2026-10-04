@@ -1,4 +1,4 @@
-"""Baselines als Messlatte (Etappe 7).
+"""Baselines als Messlatte
 
 Ohne Messlatte weiß niemand, ob 0,74 PR-AUC gut ist. Deshalb werden zuerst zwei
 bewusst einfache Vorhersagen gebaut, gegen die sich jedes komplexere Modell

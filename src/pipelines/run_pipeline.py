@@ -1,4 +1,4 @@
-"""Die ganze Kette als ein Befehl (Etappe 15).
+"""Die ganze Kette als ein Befehl.
 
 Ein Aufruf führt vom Rohdatensatz zum bewerteten, gespeicherten Modell::
 

@@ -1,22 +1,3 @@
-# Prüfungen, die bei jedem Push auf einem fremden Rechner laufen (Etappe 20).
-#
-# Warum "fremder Rechner" der eigentliche Punkt ist: Auf dem eigenen Laptop
-# läuft es immer — dort sind Pakete installiert, Zwischendateien vorhanden und
-# Pfade gewachsen. Die CI startet mit einem leeren System und nur dem, was im
-# Repository liegt. Sie ist damit die einzige ehrliche Antwort auf die Frage, ob
-# das Projekt bei jemand anderem anläuft.
-#
-# Zwei Abläufe, bewusst getrennt:
-#
-#   qualitaet  — installieren, prüfen, testen. Läuft ohne Rohdaten, weil die
-#                nicht im Repository liegen (CC-BY-Material gehört nicht in ein
-#                Codearchiv). Tests, die Daten brauchen, überspringen sich
-#                selbst: 67 laufen, 41 melden sich ab.
-#   pipeline    — holt die Rohdaten, prüft ihren Hash und rechnet die ganze
-#                Kette durch. Erst hier laufen alle 108 Tests.
-#
-# Der zweite Ablauf wartet auf den ersten (needs:). Es hat keinen Sinn, Daten zu
-# holen und ein Modell zu trainieren, wenn schon die Formatierung nicht stimmt.
 
 name: CI
 
@@ -24,10 +5,9 @@ on:
   push:
     branches: [main]
   pull_request:
-  workflow_dispatch:        # von Hand startbar, über die Oberfläche
+  workflow_dispatch:
 
-# Bei mehreren Pushes hintereinander zählt nur der letzte. Spart Laufzeit und
-# verhindert, dass ein älterer Lauf einen neueren überholt.
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -57,8 +37,8 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
-      # requirements.txt endet mit "-e ." — das Projekt selbst wird also
-      # mitinstalliert, und "from src...." funktioniert ohne PYTHONPATH.
+
+      # mitinstalliert, und "from src...."
       - name: Pakete installieren
         run: python -m pip install -r requirements.txt
 
@@ -68,8 +48,7 @@ jobs:
       - name: ruff — Formatierung
         run: ruff format --check src tests scripts
 
-      # Ohne Rohdaten. Die Tests, die Daten oder ein Modell brauchen,
-      # überspringen sich selbst (-rs zeigt, welche und warum).
+
       - name: Tests
         run: pytest -rs
 
@@ -93,7 +72,7 @@ jobs:
 
       # Der Schlüssel ist der eingefrorene SHA-256 aus params.yaml. Ändert sich
       # der Hash, greift der Zwischenspeicher nicht mehr und die Datei wird neu
-      # geholt — genau richtig, denn dann ist es eine andere Datei.
+      # geholt
       - name: Hash der Rohdaten lesen
         id: daten
         run: echo "sha=$(grep -oE '[0-9a-f]{64}' params.yaml | head -1)" >> "$GITHUB_OUTPUT"
@@ -108,7 +87,7 @@ jobs:
       # Nur bei leerem Zwischenspeicher. Das Skript prüft den SHA-256 gegen
       # params.yaml und bricht bei Abweichung ab: Hat die Quelle die Datei
       # verändert, ist keine bisherige Kennzahl mehr vergleichbar, und das soll
-      # die CI rot melden statt stillschweigend weiterrechnen.
+      # die CI rot melden.
       - name: Rohdaten holen
         if: steps.speicher.outputs.cache-hit != 'true'
         run: python scripts/fetch_data.py
@@ -119,18 +98,15 @@ jobs:
       - name: Kette durchrechnen
         run: python -m src.pipelines.run_pipeline --no-mlflow
 
-      # Jetzt liegen Teilmengen, Modell und Referenzstichprobe vor — erst
-      # hier können alle Tests laufen, auch die mit "langsam" markierten.
+
       - name: Alle Tests, mit Daten
         run: pytest -rs
 
-      # Die Selbstprüfung aus Etappe 18: Kontrollfall muss ruhig bleiben, alle
-      # drei Driftszenarien müssen erkannt werden. Sonst Rückgabewert 1.
+
       - name: Überwachung nachweisen
         run: python -m src.monitoring.simulate_drift
 
-      # Die Kennzahlen in die Zusammenfassung des Laufs schreiben. Damit steht
-      # das Ergebnis direkt auf der Übersichtsseite, ohne Protokolle zu öffnen.
+      # Die Kennzahlen in die Zusammenfassung des Laufs schreiben.
       - name: Kennzahlen in die Zusammenfassung
         if: always()
         run: |
@@ -174,9 +150,7 @@ jobs:
           PY
 
       # Das Modell an den nächsten Ablauf weitergeben. So baut der Container
-      # genau das Modell ein, das dieser Lauf erzeugt und geprüft hat — und
-      # nicht eines, das jemand von Hand dazugelegt hat. Das ist die Kette, die
-      # eine Auslieferung nachvollziehbar macht.
+      # genau das Modell ein, das dieser Lauf erzeugt und geprüft hat.
       - name: Modell als Artefakt
         uses: actions/upload-artifact@v4
         with:
@@ -197,8 +171,6 @@ jobs:
           retention-days: 30
 
   # ── Container ────────────────────────────────────────────────────────
-  # Das ist die Auslieferung dieses Projekts (Etappe 21): ein gebautes und
-  # geprüftes Abbild. Nicht ein Deployment — was dafür fehlt, steht im README.
   container:
     name: Abbild bauen und prüfen
     runs-on: ubuntu-latest
@@ -207,9 +179,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Das Modell kommt aus dem vorigen Ablauf, nicht aus dem Repository
-      # (dort liegt es nicht) und nicht aus einem frischen Training (dann wäre
-      # es ein anderes als das geprüfte).
+
       - name: Modell aus dem Pipelinelauf holen
         uses: actions/download-artifact@v4
         with:
@@ -226,8 +196,7 @@ jobs:
       - name: Container starten
         run: docker run -d --name pdm-api -p 8000:8000 pdm-api:${{ github.sha }}
 
-      # Nicht blind schlafen, sondern den HEALTHCHECK des Abbilds abwarten.
-      # Damit ist auch geprüft, dass der Haken im Dockerfile funktioniert.
+
       - name: Auf "healthy" warten
         run: |
           for i in $(seq 1 30); do
@@ -248,9 +217,7 @@ jobs:
             -d '{"type":"L","air_temperature_k":302.0,"process_temperature_k":310.5,
                  "rotational_speed_rpm":1320,"torque_nm":64.0,"tool_wear_min":215}'
 
-      # Die Probe aufs Ganze: Antwortet im Container genau das Modell, das die
-      # Kette erzeugt hat? /model-info nennt seinen SHA-256 — er muss mit dem
-      # Hash des Artefakts übereinstimmen.
+
       - name: Modell im Container ist das geprüfte
         run: |
           im_container=$(curl -fsS http://localhost:8000/model-info \

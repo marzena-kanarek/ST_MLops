@@ -1,4 +1,4 @@
-"""Modelle vergleichen und abstimmen (Etappe 9).
+"""Modelle vergleichen und abstimmen.
 
 Vorgehen in drei Schritten, bewusst in dieser Reihenfolge:
 

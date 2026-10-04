@@ -1,4 +1,4 @@
-"""Drift simulieren und zeigen, dass die Überwachung anschlägt (Etappe 18).
+"""Drift simulieren und zeigen, dass die Überwachung anschlägt.
 
 Eine Überwachung, die nie angeschlagen hat, ist unbelegt. Dieses Skript
 verändert die Eingangsdaten auf drei Weisen, die im Betrieb tatsächlich
@@ -159,7 +159,7 @@ def fuehre_aus(params: dict[str, Any] | None = None) -> dict[str, Any]:
     referenz = lade_referenz(params)
 
     # Bewertet wird auf der Validierungsmenge. Die Testmenge bleibt für die
-    # einzige Abschlussmessung in Etappe 22 unangetastet.
+    # einzige Abschlussmessung unangetastet.
     _, val, _ = lade_teilmengen()
     X, y = trenne_merkmale_und_ziel(val, params)
     pipeline = joblib.load(PATHS.models / "model.joblib")["pipeline"]

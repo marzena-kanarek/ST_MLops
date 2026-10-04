@@ -1,4 +1,4 @@
-"""Überwachung: Drift messen (Etappe 18).
+"""Überwachung: Drift messen.
 
 **Warum das nötig ist:** ML-Modelle verfallen leise. Niemand bekommt eine
 Fehlermeldung, wenn ein Sensor neu kalibriert wird oder die Produktion auf eine

@@ -1,4 +1,4 @@
-"""Entscheidungsregel: den Schwellenwert begründet wählen (Etappe 10).
+"""Entscheidungsregel: den Schwellenwert begründet wählen.
 
 ``predict()`` benutzt stillschweigend 0,5. Dieser Wert ist bei seltenen
 Ereignissen und ungleichen Fehlerkosten praktisch immer falsch — er ist eine

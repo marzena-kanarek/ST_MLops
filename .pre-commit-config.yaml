@@ -1,4 +1,4 @@
-# Prüfungen, die vor jedem Commit laufen (Etappe 19).
+# Prüfungen, die vor jedem Commit laufen.
 #
 # Einrichten — einmalig, nach dem Klonen:
 #
@@ -64,10 +64,7 @@ repos:
         name: keine vergessenen Haltepunkte
 
   # ── Notebooks ───────────────────────────────────────────────────────
-  # Ausgaben aus den Notebooks entfernen wir NICHT: Die Belege in den Notebooks
-  # (Tabellen, Abbildungen, gemessene Werte) sind Teil der Abgabe und sollen
-  # sichtbar bleiben, ohne dass jemand alles neu ausführen muss. Geprüft wird
-  # nur, dass die Dateien gültiges Notebook-Format haben.
+
   - repo: https://github.com/kynan/nbstripout
     rev: 0.8.1
     hooks:

@@ -1,4 +1,4 @@
-"""Merkmalskonstruktion innerhalb der Pipeline (Etappe 8).
+"""Merkmalskonstruktion innerhalb der Pipeline.
 
 Die abgeleiteten Größen stammen aus der Fachdomäne, nicht aus dem Ausprobieren.
 Jede von ihnen fasst zusammen, was ein Baum sonst mühsam mit vielen Schnitten
@@ -6,7 +6,7 @@ annähern müsste.
 
 **Warum das „innerhalb der Pipeline" entscheidend ist:** Würden die Merkmale im
 Notebook berechnet und das Modell auf dem Ergebnis trainiert, müsste die
-Schnittstelle in Etappe 16 exakt dieselbe Rechnung wiederholen. Zwei Stellen,
+Schnittstelle exakt dieselbe Rechnung wiederholen. Zwei Stellen,
 dieselbe Formel — sobald eine abweicht, bekommt das Modell im Betrieb andere
 Zahlen als im Training. Nichts stürzt ab, die Güte sinkt nur leise. Steckt die
 Berechnung dagegen als ``FunctionTransformer`` in der Pipeline, wandert sie mit

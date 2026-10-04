@@ -1,4 +1,4 @@
-"""Trainingslauf mit Protokollierung (Etappe 11).
+"""Trainingslauf mit Protokollierung.
 
 Ein Aufruf trainiert das in ``params.yaml`` festgelegte Modell, bewertet es auf
 der Validierungsmenge und hinterlässt eine vollständige Spur in MLflow:

@@ -1,14 +1,14 @@
 {
-  "started_at": "2026-10-02T09:15:15+00:00",
-  "finished_at": "2026-10-02T09:15:18+00:00",
-  "duration_s": 3.35,
+  "started_at": "2026-10-04T22:02:56+00:00",
+  "finished_at": "2026-10-04T22:03:00+00:00",
+  "duration_s": 3.64,
   "status": "ok",
   "command": "python -m src.pipelines.run_pipeline",
   "provenance": {
     "raw_data_sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e",
     "params_sha256": "03ebecdc787d82e5319085ac5b5dea9469165afe535ae9edc706cb9fac758712",
     "params_file": "params.yaml",
-    "git_commit": "2fbf5d8+dirty",
+    "git_commit": "e9a525a",
     "seed": 42
   },
   "environment": {
@@ -24,21 +24,21 @@
   "steps": {
     "daten": {
       "status": "ok",
-      "duration_s": 0.01,
+      "duration_s": 0.02,
       "rows": 10000,
       "columns": 14,
       "positive_rate": 0.0339
     },
     "pruefen": {
       "status": "ok",
-      "duration_s": 0.0,
+      "duration_s": 0.01,
       "checks_run": 38,
       "errors": 0,
       "warnings": []
     },
     "aufteilen": {
       "status": "ok",
-      "duration_s": 0.06,
+      "duration_s": 0.11,
       "removed_columns": [
         "hdf",
         "osf",
@@ -66,7 +66,7 @@
     },
     "trainieren": {
       "status": "ok",
-      "duration_s": 3.2,
+      "duration_s": 3.43,
       "model": "random_forest",
       "hyperparameters": {
         "n_estimators": 150,
@@ -83,19 +83,19 @@
       "status": "ok",
       "duration_s": 0.0,
       "model_file": "models/model.joblib",
-      "model_bytes": 907669,
+      "model_bytes": 907663,
       "quality_gate": "bestanden",
       "costs_eur": 126200.0
     },
     "referenz": {
       "status": "ok",
-      "duration_s": 0.04,
+      "duration_s": 0.03,
       "file": "data/processed/reference_sample.csv",
       "rows": 1000,
       "source": "validierungsmenge"
     }
   },
-  "model_sha256": "1ab705adc9bbdee83bcb12f08a98c23deab9747bfcc0f4e5bdaf1b09064404aa",
+  "model_sha256": "255a268ea65bea1de0c4ae4fb3a7d6aca7767eadd53e82d114efb7dd1ea55361",
   "metrics": {
     "pr_auc": 0.8603838095898327,
     "roc_auc": 0.9519952908699711,

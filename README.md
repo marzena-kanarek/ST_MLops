@@ -650,8 +650,8 @@ Geld liegt, sind zwei verschiedene Fragen.
 
 | | |
 |---|---|
-| ganze Kette (`make pipeline`) | ≈ 0,5 s |
-| Testsuite (150 Tests) | ≈ 1,3 s |
+| ganze Kette (`make pipeline`) | ≈ 3,6 s |
+| Testsuite (150 Tests) | ≈ 1,9 s |
 | Einzelvorhersage über HTTP | ≈ 15 ms (davon 13 ms der Wald) |
 | Stapel von 100 Zeilen | 0,15 ms je Zeile — 98× schneller |
 

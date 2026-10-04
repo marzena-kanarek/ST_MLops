@@ -1,4 +1,4 @@
-"""Protokoll der Vorhersagen (Etappe 17).
+"""Protokoll der Vorhersagen.
 
 **Warum das nicht optional ist:** Ohne Protokoll ist Überwachung unmöglich — es
 gäbe nichts, worauf man sie anwenden könnte. Und wenn sich jemand über eine

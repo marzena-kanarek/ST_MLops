@@ -1,4 +1,4 @@
-# Abbild der Vorhersage-Schnittstelle (Etappe 21).
+# Abbild der Vorhersage-Schnittstelle.
 #
 # Ziel: Das Projekt läuft auf einem Rechner, auf dem kein Python installiert ist.
 #
@@ -51,7 +51,7 @@ WORKDIR /app
 # Ein eigener Benutzer ohne Rechte. Ein Dienst, der nur Vorhersagen liefert,
 # braucht kein root — und wenn er doch einmal übernommen wird, soll der
 # Angreifer nicht als root im Container stehen. reports/ wird hier angelegt,
-# weil der Dienst dort seine Protokolle schreibt (Etappe 17).
+# weil der Dienst dort seine Protokolle schreibt.
 RUN useradd --create-home --uid 10001 dienst \
     && mkdir -p /app/reports \
     && chown -R dienst:dienst /app

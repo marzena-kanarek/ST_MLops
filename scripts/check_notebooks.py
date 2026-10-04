@@ -1,19 +1,3 @@
-"""Notebooks vor der Abgabe prüfen (Etappe 22).
-
-Zwei Dinge gehen bei Notebooks regelmäßig schief, und beide sieht man von außen
-nicht:
-
-1. **Keine Ausgaben.** Das Notebook enthält Code, aber keine Ergebnisse. Wer es
-   liest, sieht keine Tabellen, keine Abbildungen, keine Zahlen — und muss alles
-   selbst ausführen, um zu erfahren, was herauskommt. Für eine Abgabe, in der die
-   Notebooks die Belege sind, ist das der schwerste Mangel.
-
-2. **Nicht in einem Durchlauf entstanden.** Die Ausführungsnummern sind nicht
-   1, 2, 3 …, sondern durcheinander. Dann hängen die Ergebnisse von einer
-   Reihenfolge ab, die niemand mehr kennt: Vielleicht ist eine Variable noch aus
-   einem früheren Versuch im Speicher, vielleicht wurde eine Zelle nach einer
-   Änderung nicht erneut ausgeführt. Gegenmittel ist immer dasselbe:
-   **Restart & Run All**, dann speichern.
 
 Dieses Skript prüft nur, es verändert nichts. Rückgabewert 1, wenn etwas zu tun
 ist — damit es sich auch in eine Prüfkette einbauen lässt.

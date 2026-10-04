@@ -26,7 +26,7 @@ data:
   test_size: 0.15
   validation_size: 0.15
 
-# ── Datenvertrag (Etappe 4) ────────────────────────────────────────────
+# ── Datenvertrag ────────────────────────────────────────────
 # Die Zusagen über die Daten. Verletzungen der harten Grenzen (min/max,
 # allowed, required) sind FEHLER und brechen ab. Überschreitungen der
 # weichen Grenzen (warn_min/warn_max) sind WARNUNGEN: im Training toleriert,
@@ -99,7 +99,7 @@ data_contract:
       allowed: [0, 1]
       beschreibung: "Zielgröße"
 
-# ── Modellwahl (Etappe 9) ──────────────────────────────────────────────
+# ── Modellwahl ──────────────────────────────────────────────
 # Gewählt wurde der Random Forest: bester Wert in der Kreuzvalidierung
 # (0,907 gegenüber 0,865 für XGBoost und 0,503 für die logistische Regression)
 # und zugleich das einfachere Verfahren mit weniger Abhängigkeiten.
@@ -123,7 +123,7 @@ costs:
   false_positive_eur: 500       # Fehlalarm
   true_positive_eur: 800        # geplante Wartung
 
-# ── Entscheidungsregel (Etappe 10) ─────────────────────────────────────
+# ── Entscheidungsregel  ─────────────────────────────────────
 # Gesucht auf der Validierungsmenge als der Schwellenwert mit den geringsten
 # erwarteten Kosten. 0,06 statt der Voreinstellung 0,50: Das spart in der
 # Validierungsmenge 43.900 EUR (170.100 -> 126.200) und hebt den Recall von
@@ -138,7 +138,7 @@ decision:
     stop: 0.99
     steps: 99
 
-# ── Qualitätsschranke (Etappe 12) ──────────────────────────────────────
+# ── Qualitätsschranke ──────────────────────────────────────
 # Mindestanforderungen, die ein Modell erfüllen muss, bevor es gespeichert und
 # registriert wird. Geprüft wird auf der Validierungsmenge, beim festgelegten
 # Entscheidungsschwellenwert. Ein Modell, das hier durchfällt, überschreibt das
@@ -152,7 +152,7 @@ quality_gate:
   # wenn ein Lauf erkennbar schlechter wird.
   max_expected_cost_eur: 200000
 
-# ── Modellvergleich (Etappe 9) ─────────────────────────────────────────
+# ── Modellvergleich ─────────────────────────────────────────
 # Die Einstellungen der drei Kandidaten für den Vergleich. Bewusst
 # unabgestimmte Startwerte: Verglichen werden die Verfahren, nicht die
 # Feinarbeit. Abgestimmt wird erst danach, und nur der Gewinner.
@@ -167,19 +167,19 @@ comparison:
     max_depth: 5
     learning_rate: 0.1
 
-# ── Abstimmung der Hyperparameter (Etappe 9) ───────────────────────────
+# ── Abstimmung der Hyperparameter  ───────────────────────────
 tuning:
   cv_folds: 5       # geschichtete Kreuzvalidierung
   n_iter: 30        # Versuche der Zufallssuche
 
-# ── Protokollierung (Etappe 11) ────────────────────────────────────────
+# ── Protokollierung ────────────────────────────────────────
 # SQLite statt reiner Dateien, weil das Modellregister eine Datenbank braucht.
 # Über die Umgebungsvariable MLFLOW_TRACKING_URI umstellbar.
 tracking:
   experiment: "predictive-maintenance"
   backend_store: "mlflow.db"
 
-# ── Überwachung und Drift (Etappe 18) ──────────────────────────────────
+# ── Überwachung und Drift  ──────────────────────────────────
 # Die Referenzstichprobe ist der Maßstab: Ohne sie kann man keine Drift messen.
 # Sie entsteht am Ende jedes Pipelinelaufs aus der Validierungsmenge — nicht aus
 # der Trainingsmenge, weil die Wahrscheinlichkeiten auf gelernten Zeilen zu
@@ -203,7 +203,7 @@ monitoring:
   # schlägt jeder Test irgendwann zufällig an.
   min_rows: 100
 
-# ── Protokollierung (Etappe 17) ────────────────────────────────────────
+# ── Protokollierung ────────────────────────────────────────
 # Zwei verschiedene Protokolle, die nicht verwechselt werden dürfen:
 #
 #   app_log            — was der Dienst tut (Start, Fehler, Warnungen). Für
@@ -224,7 +224,7 @@ logging:
   # Rohwerten arbeiten.
   log_inputs: true
 
-# ── Schnittstelle (Etappe 16) ──────────────────────────────────────────
+# ── Schnittstelle ──────────────────────────────────────────
 api:
   host: "0.0.0.0"   # im Container nötig, damit der Dienst von außen erreichbar ist
   port: 8000

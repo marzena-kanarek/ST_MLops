@@ -1,5 +1,4 @@
-# Dienste des Projekts (Etappe 21).
-#
+
 #     docker compose up --build          # Schnittstelle bauen und starten
 #     curl http://localhost:8000/health
 #     docker compose down
@@ -22,7 +21,7 @@ services:
       - "8000:8000"
     environment:
       LOG_LEVEL: INFO
-    # Die Protokolle (Etappe 17) in einen benannten Datenträger, damit sie einen
+    # Die Protokolle in einen benannten Datenträger, damit sie einen
     # Neustart des Containers überleben. Ohne das wären sie mit dem Container
     # weg — und die Driftprüfung hätte keine Grundlage mehr.
     volumes:
