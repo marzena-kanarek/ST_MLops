@@ -2,9 +2,14 @@
 
 Ungeplante Maschinenausfälle können für Unternehmen erhebliche Kosten verursachen. Neben direkten Reparaturkosten können Produktionsunterbrechungen, Verzögerungen bei der Auftragsabwicklung und zusätzliche Wartungsaufwände entstehen.
 
-**Predictive Maintenance** verfolgt das Ziel, mögliche Maschinenausfälle frühzeitig zu erkennen. Anstatt Wartungsarbeiten ausschließlich nach festen Zeitintervallen oder erst nach einem Ausfall durchzuführen, werden vorhandene Maschinen- und Sensordaten genutzt, um das Ausfallrisiko vorherzusagen.
+**Predictive Maintenance** verfolgt das Ziel, mögliche Maschinenausfälle frühzeitig zu erkennen. Anstatt Wartungsarbeiten ausschließlich nach festen Zeitplan oder erst nach einem Ausfall durchzuführen, werden vorhandene Maschinen- und Sensordaten genutzt, um das Ausfallrisiko vorherzusagen.
 
-In diesem Projekt wird ein Machine-Learning-Modell auf Basis des **AI4I 2020 Predictive Maintenance Dataset** entwickelt. Der Datensatz enthält verschiedene Merkmale einer Maschine, darunter Lufttemperatur, Prozesstemperatur, Rotationsgeschwindigkeit, Drehmoment und Werkzeugverschleiß. Zusätzlich enthält er Informationen darüber, ob ein Maschinenausfall aufgetreten ist.
+In diesem Projekt wird ein Machine-Learning-Modell auf Basis des **AI4I 2020 Predictive Maintenance Dataset** entwickelt. Der Datensatz enthält verschiedene Merkmale einer Maschine, wie Lufttemperatur, Prozesstemperatur, Rotationsgeschwindigkeit, Drehmoment und Werkzeugverschleiß. Zusätzlich enthält er Informationen darüber, ob ein Maschinenausfall aufgetreten ist.
+Der Datensatz ist synthetisch. Er bildet eine Fräsmaschine nach festen Regeln
+nach und ist nicht an einer realen Anlage gemessen. Reale Sensordaten wären
+verrauschter, lückenhafter und würden zusätzliche Schritte zur Datenbereinigung
+erfordern. Die Ergebnisse dieses Prototyps sind deshalb nicht unbesehen auf
+einen Produktionsbetrieb übertragbar.
 
 Das Business-Ziel besteht darin, anhand dieser Daten frühzeitig Maschinen mit einem erhöhten Ausfallrisiko zu identifizieren. Dadurch könnten Wartungsmaßnahmen gezielter geplant und ungeplante Produktionsstillstände reduziert werden.
 
@@ -332,7 +337,7 @@ fehlt ein Paket, schlägt der Test an, nicht erst der Container beim Start.
 
 ### Automatische Prüfung bei jedem Push
 
-`.github/workflows/ci.yml`, zwei Abläufe:
+`.github/workflows/ci.yml`, drei Abläufe:
 
 | Ablauf | Was | Python |
 |---|---|---|
@@ -345,9 +350,9 @@ trainieren hat keinen Sinn, wenn schon die Formatierung nicht stimmt. Er legt
 Manifest, Kennzahlen und Driftberichte als Artefakt ab und schreibt die
 Kennzahlen samt aller Hashes in die Zusammenfassung des Laufs.
 
-Weil die Rohdaten nicht im Repository liegen, laufen im ersten Ablauf 69 Tests
-und 39 melden sich selbst ab. Erst der zweite Ablauf hat Daten — dort laufen
-alle 108.
+Weil die Rohdaten nicht im Repository liegen, melden sich im ersten Ablauf
+42 Tests selbst ab; die übrigen 108 laufen. Erst der zweite Ablauf hat
+Daten — dort laufen alle 150.
 
 `.github/workflows/monitoring.yml` läuft nach Zeitplan (montags) und macht die
 Zusage aus dem Überwachungskonzept ausführbar: die Kette neu rechnen, prüfen,
@@ -482,52 +487,114 @@ Schnittstelle, Überwachung).
 
 ## 6. Zielarchitektur
 
+Der Zielzustand eines produktionsnahen Betriebs in sechs Stufen. Der Hauptfluss
+verläuft von der Entwicklungsumgebung bis zur Überwachung, die gestrichelte
+Rückkopplung schließt den Kreis zum Training.
+
+Die Umrandung trennt Soll und Ist: **ausgefüllt** = im Prototyp umgesetzt und
+durch Läufe belegt, **weiß mit durchgezogenem Rand** = vorhanden, aber nicht
+produktionsreif, **gestrichelt** = für den Zielzustand nötig, im Prototyp nicht
+vorhanden.
+
 ```mermaid
 flowchart LR
-    subgraph quelle["Daten"]
-        roh[("data/raw<br/>ai4i2020.csv<br/>SHA-256 eingefroren")]
+    subgraph s1["1 · Entwicklungsumgebung"]
+        direction TB
+        repo["Repository<br/>Git, Historie, Tags"]:::ist
+        review["Branch-Schutz + Review<br/>Pull Request, Vier-Augen-Prinzip"]:::fehlt
+        umg["Einheitliche Umgebung<br/>Abhängigkeiten gepinnt"]:::ist
     end
 
-    subgraph kette["Kette — ein Befehl"]
-        laden["laden<br/>Hash prüfen"]
-        vertrag["Datenvertrag<br/>prüfen"]
-        teilen["Leakage entfernen<br/>geschichtet teilen"]
-        trainieren["trainieren<br/>Merkmale in der Pipeline"]
-        schranke{"Qualitäts-<br/>schranke"}
+    subgraph s2["2 · CI/CD"]
+        direction TB
+        pruef["Automatische Prüfung<br/>150 Tests, ruff, Py 3.10/3.11/3.13"]:::ist
+        bau["Abbild bauen<br/>zweistufig, ohne Rootrechte"]:::ist
+        creg["Container-Registry<br/>feste Marken statt latest"]:::fehlt
     end
 
-    subgraph artefakte["Artefakte"]
-        modell[("models/model.joblib<br/>+ Schwellenwert")]
-        referenz[("reference_sample.csv")]
-        manifest[("pipeline_run.json<br/>3 Hashes + Commit")]
+    subgraph s3["3 · Daten und Training"]
+        direction TB
+        speicher["Versionierter Datenspeicher<br/>heute: Hash einer festen Datei"]:::teil
+        vertrag["Datenvertrag<br/>harte und weiche Grenzen"]:::ist
+        train["Trainingsprozess<br/>Startwert, Manifest, Tracking"]:::teil
+        gate["Qualitätsschranke<br/>PR-AUC ≥ 0,75 · Recall ≥ 0,80<br/>Kosten ≤ 200.000 €"]:::ist
     end
 
-    subgraph betrieb["Betrieb"]
-        api["FastAPI<br/>/predict /health /metrics"]
-        protokoll[("predictions.jsonl<br/>predictions.db")]
-        drift["Driftprüfung<br/>PSI · KS · Chi²"]
+    subgraph s4["4 · Modellverwaltung"]
+        direction TB
+        mreg["Modell-Registry<br/>Alias champion, Rollback"]:::teil
+        frei["Freigabe<br/>Entscheidung durch Menschen"]:::fehlt
     end
 
-    mlflow[("MLflow<br/>Läufe + Register<br/>Alias champion")]
+    subgraph s5["5 · Deployment und Betrieb"]
+        direction TB
+        roll["Ausrollen<br/>blau/grün, Rückfallweg"]:::fehlt
+        last["Lastverteilung<br/>mehrere Instanzen"]:::fehlt
+        dienst["Inferenzdienst<br/>FastAPI im Container"]:::ist
+        schnitt["Inferenzschnittstelle<br/>Auth + Ratenlimit"]:::teil
+    end
 
-    roh --> laden --> vertrag --> teilen --> trainieren --> schranke
-    schranke -->|bestanden| modell
-    schranke -->|bestanden| referenz
-    schranke -->|durchgefallen| stop["Abbruch<br/>bisheriges Modell bleibt"]
-    trainieren -.-> mlflow
-    kette --> manifest
-    modell --> api
-    api --> protokoll
-    protokoll --> drift
-    referenz --> drift
-    drift -->|handeln| neu["Ursache prüfen,<br/>dann neu trainieren"]
-    neu -.-> kette
+    subgraph s6["6 · Überwachung"]
+        direction TB
+        applog["Anwendungsprotokoll<br/>zentral eingesammelt"]:::teil
+        vlog["Vorhersageprotokoll<br/>JSONL und SQLite"]:::ist
+        kennz["Betriebskennzahlen<br/>Prometheus"]:::ist
+        drift["Driftmessung<br/>PSI · KS · Chi²"]:::ist
+        alarm["Alerting<br/>Meldung an die Bereitschaft"]:::fehlt
+    end
+
+    repo ~~~ review ~~~ umg
+    pruef ~~~ bau ~~~ creg
+    speicher ~~~ vertrag ~~~ train ~~~ gate
+    mreg ~~~ frei
+    roll ~~~ last ~~~ dienst ~~~ schnitt
+    applog ~~~ vlog ~~~ kennz ~~~ drift ~~~ alarm
+
+    s1 --> s2 --> s3 --> s4 --> s5 --> s6
+    s6 -. "Drift-Alarm und bestätigte Befunde lösen Neutrainieren aus" .-> s3
+
+    classDef ist fill:#E4EDF6,stroke:#1F4E79,stroke-width:2px,color:#1A1A1A
+    classDef teil fill:#FFFFFF,stroke:#2E79B5,stroke-width:2px,color:#1A1A1A
+    classDef fehlt fill:#FFFFFF,stroke:#7B8794,stroke-width:1px,stroke-dasharray:5 4,color:#5B6B7B
+
+    style s1 fill:#F7F9FB,stroke:#D6DDE4
+    style s2 fill:#F7F9FB,stroke:#D6DDE4
+    style s3 fill:#F7F9FB,stroke:#D6DDE4
+    style s4 fill:#F7F9FB,stroke:#D6DDE4
+    style s5 fill:#F7F9FB,stroke:#D6DDE4
+    style s6 fill:#F7F9FB,stroke:#D6DDE4
 ```
 
-Die beiden Pfeile, auf die es ankommt: Die Qualitätsschranke steht **vor** dem
-Speichern — ein schlechteres Modell überschreibt das bisherige nicht. Und die
-Driftprüfung liest das Protokoll des laufenden Dienstes, nicht eine Testdatei;
-sie misst also, was die Schnittstelle tatsächlich gesehen hat.
+### Verantwortlichkeiten
+
+| Stufe | Rolle | Zuständig für |
+|---|---|---|
+| 1 Entwicklungsumgebung | ML-Entwicklung | Modellcode, Merkmale, Tests |
+| 2 CI/CD | Plattform / DevOps | Abläufe, Abbilder, Zugangsdaten |
+| 3 Daten und Training | Datenverantwortung | Datenqualität und -lieferung |
+| 4 Modellverwaltung | Modellverantwortung | Freigabe, Rollback, Kennzahlen |
+| 5 Deployment und Betrieb | IT-Betrieb | Verfügbarkeit, Zugriff, Skalierung |
+| 6 Überwachung | IT-Betrieb + Instandhaltung | Alarme, Rückmeldung bestätigter Befunde |
+
+Im Prototyp sind diese Rollen benannt, aber keiner Person zugeordnet — eine
+Einzelperson nimmt sie alle wahr.
+
+### Was das Bild zeigt
+
+Die gestrichelten Kästen häufen sich in den Stufen 1, 5 und 6: Review, Freigabe,
+Ausrollen, Alarmierung. Das sind durchweg Verfahren und Zuständigkeiten, keine
+Algorithmen. **Die Lücke zwischen Prototyp und Zielzustand ist überwiegend
+organisatorischer und nicht technischer Natur.**
+
+Zwei Pfeile tragen die Architektur. Die Qualitätsschranke steht **vor** der
+Modellverwaltung — ein schlechteres Modell erreicht das Register nicht und
+überschreibt das bisherige nicht. Und die Rückkopplung beginnt bei der
+Überwachung, nicht bei einem Zeitplan: Neu trainiert wird, weil sich etwas
+geändert hat, nicht weil ein Monat vergangen ist.
+
+Als Bilddatei für Präsentationen und Berichte:
+`reports/figures/19_zielarchitektur.png`, bearbeitbar mit draw.io über
+`reports/figures/19_zielarchitektur.drawio`.
 
 ---
 
@@ -653,7 +720,7 @@ Geld liegt, sind zwei verschiedene Fragen.
 | | |
 |---|---|
 | ganze Kette (`make pipeline`) | ≈ 0,5 s |
-| Testsuite (130 Tests) | ≈ 1,3 s |
+| Testsuite (150 Tests) | ≈ 1,3 s |
 | Einzelvorhersage über HTTP | ≈ 15 ms (davon 13 ms der Wald) |
 | Stapel von 100 Zeilen | 0,15 ms je Zeile — 98× schneller |
 
@@ -682,36 +749,7 @@ steht dabei, weil es keine kostenlosen gibt.
 
 ---
 
-## 9. Stand der Umsetzung
-
-| | Etappe | Status |
-|---|---|---|
-| 1 | Problem und Metrik festlegen | erledigt |
-| 2 | Werkzeuge und Repository einrichten | erledigt |
-| 3 | Daten holen und einfrieren | erledigt |
-| 4 | Datenvertrag und Validierung | erledigt |
-| 5 | Explorative Analyse | erledigt |
-| 6 | Leakage prüfen, Daten aufteilen | erledigt |
-| 7 | Baseline bauen | erledigt |
-| 8 | Merkmale konstruieren | erledigt |
-| 9 | Modelle vergleichen und abstimmen | erledigt |
-| 10 | Entscheidungsregel festlegen | erledigt |
-| 11 | Experimente nachvollziehbar machen | erledigt |
-| 12 | Qualitätsschranke und Modellregister | erledigt |
-| 13 | Tests schreiben | erledigt |
-| 14 | Konfiguration zentralisieren | erledigt |
-| 15 | Pipeline als ein Befehl | erledigt |
-| 16 | Modell als Schnittstelle bereitstellen | erledigt |
-| 17 | Protokollierung und Kennzahlen | erledigt |
-| 18 | Überwachung und Drift | erledigt |
-| 19 | Formatierung und statische Prüfung | erledigt |
-| 20 | CI/CD mit GitHub Actions | erledigt |
-| 21 | Container | erledigt |
-| 22 | Dokumentation und Abgabe | erledigt |
-
----
-
-## 10. Offene Punkte und Grenzen
+## 9. Offene Punkte und Grenzen
 
 Was dieser Prototyp **nicht** ist, und was zum Produktionsbetrieb fehlt:
 
@@ -736,12 +774,4 @@ Was dieser Prototyp **nicht** ist, und was zum Produktionsbetrieb fehlt:
 
 ---
 
-## 11. Hinweise
 
-Der Datensatz ist synthetisch. Er bildet eine Fräsmaschine nach festen Regeln
-nach und ist nicht an einer realen Anlage gemessen. Reale Sensordaten wären
-verrauschter, lückenhafter und würden zusätzliche Schritte zur Datenbereinigung
-erfordern. Die Ergebnisse dieses Prototyps sind deshalb nicht unbesehen auf
-einen Produktionsbetrieb übertragbar.
-
-Dokumentation, Code-Kommentare und Notebooks sind durchgehend deutschsprachig.
