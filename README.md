@@ -593,8 +593,8 @@ Modellverwaltung — ein schlechteres Modell erreicht das Register nicht und
 geändert hat, nicht weil ein Monat vergangen ist.
 
 Als Bilddatei für Präsentationen und Berichte:
-`reports/figures/19_zielarchitektur.png`, bearbeitbar mit draw.io über
-`reports/figures/19_zielarchitektur.drawio`.
+`reports/figures/19_zielarchitektur.png` — die Abbildung ist die gerenderte
+Fassung des Diagramms oben, nicht eine zweite Zeichnung.
 
 ---
 
