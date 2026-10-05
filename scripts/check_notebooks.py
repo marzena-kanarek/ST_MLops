@@ -1,3 +1,4 @@
+"""Prüfen, ob die Notebooks in einem Durchlauf entstanden sind und ihre Ausgaben enthalten.
 
 Dieses Skript prüft nur, es verändert nichts. Rückgabewert 1, wenn etwas zu tun
 ist — damit es sich auch in eine Prüfkette einbauen lässt.

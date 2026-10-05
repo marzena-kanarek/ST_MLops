@@ -24,7 +24,7 @@ Das Projekt betrachtet Predictive Maintenance damit aus einer **Business- und Ma
 Ein besonderer Fokus liegt auf der **Erkennung von Ausfällen**, da in einem realen Wartungsszenario das Übersehen eines bevorstehenden Ausfalls erhebliche Auswirkungen haben kann. Deshalb werden neben Accuracy auch Metriken wie **ROC-AUC, PR-AUC / Average Precision, Precision, Recall und F1-Score** betrachtet.
 
 
-######## Bei Predictive Maintenance ist insbesondere der Recall wichtig, da das Übersehen eines potenziellen Maschinenausfalls zu ungeplanten Produktionsstillständen und zusätzlichen Kosten führen kann. Der F1-Score ermöglicht hingegen eine ausgewogene Bewertung des Verhältnisses zwischen Precision und Recall.
+Bei Predictive Maintenance ist insbesondere der Recall wichtig, da das Übersehen eines potenziellen Maschinenausfalls zu ungeplanten Produktionsstillständen und zusätzlichen Kosten führen kann. Der F1-Score ermöglicht hingegen eine ausgewogene Bewertung des Verhältnisses zwischen Precision und Recall.
 
 
 
@@ -164,10 +164,6 @@ holen ihre Pfade dort ab, statt sie relativ zusammenzusetzen — ein
 `"../data/processed"` funktioniert im Notebook und bricht im Test, weil dort das
 Arbeitsverzeichnis ein anderes ist.
 
-Die Trennung ist keine Kosmetik: Notebooks sind die Werkstatt, `src/` ist die
-Fabrik. Sobald etwas im Notebook funktioniert, wandert es als Funktion nach
-`src/`, und das Notebook importiert sie zurück.
-
 ---
 
 ## 4. Einrichtung
@@ -181,9 +177,7 @@ Fabrik. Sobald etwas im Notebook funktioniert, wandert es als Funktion nach
 | Internet | einmal zum Holen der Rohdaten und der Pakete; danach läuft alles ohne |
 | Plattenplatz | etwa 600 MB für die Pakete, 3 MB für Daten und Modell |
 
-Alle Befehle dieses Dokuments stehen auch im `Makefile`. `make` ohne Argument
-zeigt sie mit einer Zeile Erklärung an — das ist die kürzeste Form von
-Dokumentation, weil man sie ausführen kann.
+Alle Befehle dieses Dokuments stehen auch im `Makefile`. `make`.
 
 ```bash
 python3 -m venv .venv
@@ -315,19 +309,14 @@ Die MLflow-Oberfläche startet nur auf Verlangen:
 diese Umgebung und den Code. So landen pip, Paketspeicher und Übersetzerreste
 nicht im fertigen Abbild. Weitere Festlegungen, jede mit Begründung in der Datei:
 
-- **Eigener Benutzer ohne Rechte** (`USER dienst`) — ein Dienst, der Vorhersagen
-  liefert, braucht kein root.
-- **`HEALTHCHECK`** auf `/health`, mit `--start-period`, damit das Laden des
-  Modells nicht als Fehler gilt. Der Container meldet sich selbst als gesund
-  oder krank.
+- **Eigener Benutzer ohne Rechte** (`USER dienst`) 
+- **`HEALTHCHECK`** auf `/health`, mit `--start-period`
 - **Das Modell steckt im Abbild**, nicht in einem eingehängten Verzeichnis.
-  Abbild und Modell sind zusammen ein versioniertes Artefakt, und der Hash in
+  Abbild und Modell sind zusammen ein versioniertes Artefakt und der Hash in
   `/model-info` gehört zu genau diesem Abbild. Für die Entwicklung ist die
   Alternative in `docker-compose.yml` beschrieben.
-- **Die Protokolle liegen in einem benannten Datenträger**, sonst wären die
-  protokollierten Vorhersagen nach einem Neustart weg — und die Driftprüfung
-  hätte keine Grundlage mehr.
-- **`.dockerignore`** hält `.venv`, Rohdaten, Notebooks und Laufdaten aus dem
+- **Die Protokolle liegen in einem benannten Datenträger**
+- **`.dockerignore`** hält `.venv` Rohdaten, Notebooks und Laufdaten aus dem
   Bau-Kontext heraus.
 
 `requirements-api.txt` enthält nur, was die Schnittstelle wirklich lädt: kein
@@ -345,8 +334,7 @@ fehlt ein Paket, schlägt der Test an, nicht erst der Container beim Start.
 | `pipeline` | Rohdaten holen und Hash prüfen, ganze Kette rechnen, alle Tests, Driftnachweis | 3.11 |
 | `container` | Abbild bauen, starten, `/health` abwarten, `/predict` abfragen | 3.11 |
 
-Der zweite Ablauf wartet auf den ersten: Daten zu holen und ein Modell zu
-trainieren hat keinen Sinn, wenn schon die Formatierung nicht stimmt. Er legt
+Der zweite Ablauf wartet auf den ersten. Er legt
 Manifest, Kennzahlen und Driftberichte als Artefakt ab und schreibt die
 Kennzahlen samt aller Hashes in die Zusammenfassung des Laufs.
 
@@ -371,8 +359,7 @@ das geprüfte Container-Abbild, nicht ein Deployment in eine Laufzeitumgebung. F
 Abbild, verwaltete Zugangsdaten, getrennte Umgebungen mit einer Freigabe
 dazwischen, ein Rückfallweg auf die vorige Version, eine Startprüfung gegen den
 laufenden Dienst und die Infrastruktur, auf der er läuft. Das sind
-organisatorische und betriebliche Voraussetzungen, keine fehlenden Codezeilen —
-sie hier zu simulieren würde einen Zustand vorspiegeln, den es nicht gibt.
+organisatorische und betriebliche Voraussetzungen.
 
 ### Codequalität
 
@@ -479,9 +466,6 @@ pytest -m "not langsam"     # ohne die Tests, die ein Modell trainieren
 
 Die Notebooks liegen unter `notebooks/`, die erzeugten Abbildungen unter
 `reports/figures/`.
-
-Weitere Befehle kommen mit den folgenden Etappen hinzu (Pipeline,
-Schnittstelle, Überwachung).
 
 ---
 
@@ -613,7 +597,7 @@ aller Entscheidungen (`make abschluss`, Bericht in
 | TP / FP / FN | 49 / 55 / 2 | von 51 Ausfällen |
 | erwartete Kosten | **86.700 €** | gegenüber 510.000 € bei Nichtstun |
 
-Beide Erfolgsschwellen aus Etappe 1 (PR-AUC ≥ 0,75, Recall ≥ 0,80) sind erfüllt.
+Beide Erfolgsschwellen (PR-AUC ≥ 0,75, Recall ≥ 0,80) sind erfüllt.
 
 **Wie dieses Ergebnis zu lesen ist.** Es liegt über der Validierungsmenge
 (+0,077 PR-AUC). Das ist **kein** Beleg dafür, dass das Modell besser ist als
@@ -636,16 +620,13 @@ erwartete Kosten — 303.400 EUR übersteigen die Obergrenze 200.000 EUR
 ```
 
 Alle drei Anforderungen gerissen, der Lauf endet mit Rückgabewert 1 — und
-entscheidend: **`models/model.joblib` wurde nicht überschrieben.** Ein
-schlechterer Lauf ersetzt das bestehende Modell nicht. Die Kennzahlen werden
-trotzdem abgelegt, damit man nachlesen kann, woran es lag.
+entscheidend: **`models/model.joblib` wurde nicht überschrieben.** 
 
 ### Wo das Modell danebenliegt
 
 Die Fehlerzerlegung (Notebook 09, `python -m src.modeling.error_slicing`) auf der
 Validierungsmenge beantwortet, was die Gesamtzahl verdeckt: **welche Art** von
-Ausfall übersehen wird. Dafür werden die Ursachenspalten wieder herangezogen —
-als Diagnose, nicht als Merkmal.
+Ausfall übersehen wird.
 
 | Ausfallart | gefunden | Recall |
 |---|---|---|
@@ -668,8 +649,7 @@ Dieselbe Aussage in den Einzelscheiben: Die Scheiben mit Recall 0 % liegen alle
 im normalen Betriebsbereich (mittleres Drehmoment, mittlere Drehzahl), wo wenige
 und unauffällige Ausfälle stattfinden. In den Randbändern liegt der Recall bei
 97 bis 100 %. Die Kosten dagegen konzentrieren sich im obersten Verschleißband
-(70 % der Gesamtkosten bei 83,9 % Recall) — wo der Recall schlecht ist und wo das
-Geld liegt, sind zwei verschiedene Fragen.
+(70 % der Gesamtkosten bei 83,9 % Recall).
 
 ### Überwachung
 
@@ -710,7 +690,7 @@ steht dabei, weil es keine kostenlosen gibt.
 | Modell im Container-Abbild, nicht eingehängt | Abbild und Modell sind zusammen **ein** versioniertes Artefakt | jedes neue Modell braucht einen Neubau |
 | Notebooks nicht gelintet | dort sind Importe mitten im Dokument und Anzeigevariablen gewollt | die Werkstatt hat niedrigere Standards als die Fabrik — bewusst |
 | Python-Untergrenze 3.10 | der Code braucht nichts Neueres; breiter lauffähig in Container und CI | kein `datetime.UTC`, `timezone.utc` bleibt |
-| Testmenge genau einmal | nur so ist sie eine Aussage über unbekannte Daten | keine Nachjustierung mehr möglich — das Ergebnis steht, wie es steht |
+| Testmenge genau einmal | nur so ist sie eine Aussage über unbekannte Daten | keine Nachjustierung mehr möglich — das Ergebnis steht |
 
 ---
 

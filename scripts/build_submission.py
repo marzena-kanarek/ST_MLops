@@ -1,3 +1,4 @@
+"""Das Abgabearchiv bauen und anschließend prüfen.
 
 Das Archiv enthält mehr als das Git-Repository: Die **Rohdatei** kommt mit, damit
 die Kette ohne Internetzugang läuft, und das **trainierte Modell**, damit die
