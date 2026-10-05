@@ -552,6 +552,40 @@ nutzlos, weil diese Spalten zum Vorhersagezeitpunkt nicht bekannt sind.
 Kreuzvalidierung auf der Trainingsmenge (5 Faltungen): Random Forest
 0,903 ± 0,042, XGBoost 0,864 ± 0,030, logistische Regression 0,505 ± 0,068.
 
+### Das gewählte Modell
+
+Ein **Random Forest mit 150 Bäumen**, eingebettet in eine sklearn-Pipeline.
+
+| Einstellung | Wert |
+|---|---|
+| `n_estimators` | 150 |
+| `max_depth` | 10 |
+| `max_features` | 0.5 |
+| `min_samples_leaf` | 5 |
+| `class_weight` | keine |
+| Startwert | 42 |
+
+Die Werte stehen in `params.yaml` unter `model.random_forest`, die Begründung
+für 150 statt der gefundenen 379 Bäume in Abschnitt 8.
+
+Dem Wald vorgelagert sind in derselben Pipeline die One-hot-Kodierung der
+Qualitätsvariante und drei **abgeleitete Merkmale**:
+
+| Merkmal | Formel | Wofür |
+|---|---|---|
+| `temp_difference_k` | Prozess- − Lufttemperatur | Wärmeabfuhr |
+| `power_w` | M · 2πn / 60 | mechanische Leistung |
+| `wear_torque_min_nm` | Verschleiß · Drehmoment | abgenutztes Werkzeug unter Last |
+
+Dass die Merkmalskonstruktion **innerhalb** der Pipeline liegt, schließt einen
+Training-Serving-Skew aus: Die Schnittstelle rechnet sie nicht nach, sondern
+verwendet dieselbe Pipeline.
+
+Das Artefakt unter `models/model.joblib` enthält neben der Pipeline den
+Entscheidungsschwellenwert, die Herkunftsangaben und die Kennzahlen des Laufs —
+eine Version ist damit eine vollständige Entscheidungseinheit und nicht nur ein
+Satz Gewichte.
+
 ### Entscheidungsregel
 
 | Schwellenwert | Kosten auf der Validierungsmenge | Recall |
